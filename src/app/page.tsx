@@ -14,22 +14,20 @@ interface Brand {
 
 export default function HomePage() {
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [selected, setSelected] = useState<number[]>([]); // IDs seleccionados
+  const [selected, setSelected] = useState<number[]>([]);
 
-
-useEffect(() => {
-  const fetchBrands = async () => {
-    const { data, error } = await supabase.from("brands").select("*");
-    if (error) {
-      console.error("Error al cargar marcas:", error.message);
-    } else {
-      console.log("✅ Data de Supabase:", data);  // 👈 para verificar
-      setBrands(data || []);
-    }
-  };
-  fetchBrands();
-}, []);
-
+  useEffect(() => {
+    const fetchBrands = async () => {
+      const { data, error } = await supabase.from("brands").select("*");
+      if (error) {
+        console.error("❌ Error al cargar marcas:", error.message);
+      } else {
+        console.log("✅ Data de Supabase:", data);
+        setBrands(data || []);
+      }
+    };
+    fetchBrands();
+  }, []);
 
   const handleToggle = (id: number) => {
     setSelected((prev) =>
@@ -38,7 +36,7 @@ useEffect(() => {
   };
 
   return (
-    <main className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-10 xl:grid-col-12 gap-4 p-4">
+    <main className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-10 xl:grid-cols-12 gap-4 p-4">
       {brands.map((brand) => (
         <FilterBrandCard
           key={brand.id}
