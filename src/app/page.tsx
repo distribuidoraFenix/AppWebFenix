@@ -1,52 +1,54 @@
 "use client";
 
-import Navbar from "@/components/common/NavBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import FilterBrandCard from "@/components/common/FilterBrandCard";
 
-const brandFilters = [
-  { id: 1, name: "BAW", image: "/logos/bawlogo.webp" },
-  { id: 2, name: "BAIC", image: "/logos/baiclogo.webp" },
-  { id: 3, name: "NISSAN", image: "/logos/nissanlogo.webp" },
-  { id: 4, name: "SUZUKI", image: "/logos/suzukilogo.webp" },
-];
+interface Brand {
+  id: number;
+  name: string;
+  logo_url: string;
+  active: boolean;
+  importadora: string;
+}
 
-export default function Home() {
-  const [activeFilters, setActiveFilters] = useState<number[]>([]);
+export default function HomePage() {
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [selected, setSelected] = useState<number[]>([]); // IDs seleccionados
+
+
+useEffect(() => {
+  const fetchBrands = async () => {
+    const { data, error } = await supabase.from("brands").select("*");
+    if (error) {
+      console.error("Error al cargar marcas:", error.message);
+    } else {
+      console.log("✅ Data de Supabase:", data);  // 👈 para verificar
+      setBrands(data || []);
+    }
+  };
+  fetchBrands();
+}, []);
+
 
   const handleToggle = (id: number) => {
-    setActiveFilters((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   return (
-    <main className="p-4">
-      
- 
-
-      {/* Título */}
-      <h1 className="text-lg font-bold my-4">Selecciona la marca</h1>
-
-      {/* Tarjetas de filtros */}
-      <div className="grid grid-cols-2 gap-4">
-        {brandFilters.map((brand) => (
-          <FilterBrandCard
-            key={brand.id}
-            id={brand.id}
-            name={brand.name}
-            image={brand.image}
-            onToggle={handleToggle}
-            isActive={activeFilters.includes(brand.id)}
-          />
-        ))}
-      </div>
-
-      {/* Mostrar filtros activos */}
-      <div className="mt-6">
-        <h2 className="text-sm font-semibold">Filtros activos:</h2>
-        <p className="text-gray-600">{activeFilters.join(", ") || "Ninguno"}</p>
-      </div>
+    <main className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-10 xl:grid-col-12 gap-4 p-4">
+      {brands.map((brand) => (
+        <FilterBrandCard
+          key={brand.id}
+          id={brand.id}
+          name={brand.name}
+          logo={brand.logo_url}
+          isActive={selected.includes(brand.id)}
+          onToggle={handleToggle}
+        />
+      ))}
     </main>
   );
 }
