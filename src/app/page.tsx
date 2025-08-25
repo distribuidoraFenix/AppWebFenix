@@ -14,20 +14,22 @@ interface Brand {
 
 export default function HomePage() {
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number[]>([]); // IDs seleccionados
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      const { data, error } = await supabase.from("brands").select("*");
-      if (error) {
-        console.error("❌ Error al cargar marcas:", error.message);
-      } else {
-        console.log("✅ Data de Supabase:", data);
-        setBrands(data || []);
-      }
-    };
-    fetchBrands();
-  }, []);
+
+useEffect(() => {
+  const fetchBrands = async () => {
+    const { data, error } = await supabase.from("brands").select("*");
+    if (error) {
+      console.error("Error al cargar marcas:", error.message);
+    } else {
+      console.log("✅ Data de Supabase:", data);  // 👈 para verificar
+      setBrands(data || []);
+    }
+  };
+  fetchBrands();
+}, []);
+
 
   const handleToggle = (id: number) => {
     setSelected((prev) =>
