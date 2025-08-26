@@ -14,7 +14,7 @@ export default function FilterTypeCard({ id, name, icon, isActive, onToggle }: F
   return (
     <div
       onClick={() => onToggle(id)}
-      className={`w-auto text-gray-800 h-16 p-2 sm:p-2 md:p-1 sm:h-32 flex flex-col items-center justify-center rounded border cursor-pointer transition-all duration-300 
+      className={`w-auto text-gray-800 h-16 p-2 sm:p-2 md:p-1 sm:h-32 md:h-28 flex flex-col items-center justify-center rounded border cursor-pointer transition-all duration-300 
         ${isActive ? "bg-green-200 border-red-400" : "bg-white hover:bg-gray-50"}`}
     >
       <Image
@@ -23,7 +23,7 @@ export default function FilterTypeCard({ id, name, icon, isActive, onToggle }: F
         width={60}
         height={60}
       />
-      <span className="hidden sm:block mt-2 text-sm font-bold italic">{name}</span>
+      <span className="hidden sm:block mt-2 text-sm md:text-xs font-bold italic">{name}</span>
     </div>
   );
 }

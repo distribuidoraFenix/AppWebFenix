@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // 👈 para navegar
 import { supabase } from "@/lib/supabaseClient";
 import FilterBrandCard from "@/components/common/FilterBrandCard";
 import TypeFilterGrid from "@/components/filters/TypeFilterGrid"; 
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
+  const router = useRouter();
 
   // 🔹 Fetch de marcas activas
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function HomePage() {
         .eq("active", true);
 
       if (error) {
-        console.error("Error al cargar marcas:", error.message);
+        console.error("❌ Error al cargar marcas:", error.message);
       } else {
         setBrands(data || []);
       }
@@ -40,6 +42,20 @@ export default function HomePage() {
     setSelectedBrands((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
+  };
+
+  // 🔹 Navegar con filtros seleccionados
+  const handleFilter = () => {
+    const params = new URLSearchParams();
+
+    if (selectedBrands.length > 0) {
+      params.set("brands", selectedBrands.join(",")); // ej: 1,2,3
+    }
+    if (selectedTypes.length > 0) {
+      params.set("types", selectedTypes.join(",")); // ej: 4,5
+    }
+
+    router.push(`/resultados?${params.toString()}`);
   };
 
   return (
@@ -69,6 +85,14 @@ export default function HomePage() {
           onSelectionChange={setSelectedTypes}
         />
       </section>
+
+      {/* Botón Flotante */}
+      <button
+        onClick={handleFilter}
+        className="text-sm fixed bottom-3 right-6 bg-green-700 hover:bg-green-600 text-gray-200 font-semibold px-6 py-3 rounded-lg shadow-lg"
+      >
+        FILTRAR
+      </button>
     </main>
   );
 }
