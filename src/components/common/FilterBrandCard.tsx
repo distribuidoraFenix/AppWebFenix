@@ -14,7 +14,7 @@ export default function FilterCard({ id, name, logo, onToggle, isActive }: Filte
   return (
     <div
       onClick={() => onToggle(id)}
-      className={`w-auto h-18 sm:h-24 flex flex-col items-center justify-center rounded border cursor-pointer transition-all duration-300 
+      className={`w-auto h-20 p-2 sm:p-2 md:p-1 sm:h-24 flex flex-col items-center justify-center rounded border cursor-pointer transition-all duration-300 
         ${isActive ? "border-red-500 bg-green-200" : "border-gray-300 bg-white"}`}
     >
       <Image 
