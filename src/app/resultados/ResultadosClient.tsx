@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import CarCard from "@/components/common/CarCard";
+import { ArrowLeft } from "lucide-react";
 
 // 🔹 Tipo de la tabla en Supabase
 interface CarRow {
@@ -29,6 +30,7 @@ interface Car {
 
 export default function ResultadosClient() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const brandsParam = searchParams.get("brands");
   const typesParam = searchParams.get("types");
@@ -85,10 +87,22 @@ export default function ResultadosClient() {
   if (cars.length === 0) return <p className="p-4">No se encontraron resultados</p>;
 
   return (
-    <main className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {cars.map((car) => (
-        <CarCard key={car.id} car={car} />
-      ))}
+    <main className="p-4 relative">
+      {/* 🔹 Grid de autos */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {cars.map((car) => (
+          <CarCard key={car.id} car={car} />
+        ))}
+      </section>
+
+      {/* 🔙 Botón flotante */}
+      <button
+        onClick={() => router.push("/")}
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-red-950 text-gray-200 px-3 py-3 rounded-full shadow-lg hover:bg-red-800 transition"
+      >
+        <ArrowLeft size={18} />
+        <span className="hidden sm:inline"></span>
+      </button>
     </main>
   );
 }

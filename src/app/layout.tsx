@@ -17,8 +17,7 @@ export default function RootLayout({
       <body className="bg-gray-800 text-gray-200">
         {/* Navbar siempre arriba */}
         <Navbar />
-        <h2 className="text-base md:text-2xl pt-4 pl-6 italic">
-          Selecciona la marca y el tipo de vehículo que buscas</h2>
+      
 
         {/* Aquí renderizan las páginas */}
         <main className="p-2">{children}</main>
