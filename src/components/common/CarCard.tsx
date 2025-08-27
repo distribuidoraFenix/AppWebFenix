@@ -16,7 +16,7 @@ export default function CarCard({ car }: { car: Car }) {
   const router = useRouter();
 
   const handleVerDetalles = () => {
-    router.push(`/vehiculo-detalle?id=${car.id}`);
+    router.push(`/vehicle/${car.id}`);
   };
 
   const handleCotizar = () => {

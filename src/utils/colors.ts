@@ -9,5 +9,5 @@ export const colorMap: Record<string, string> = {
   Azul_claro: "bg-blue-300",
   Plata: "bg-gray-300",
   Naranja: "bg-orange-500",
-  Cafe_claro: "bg-amber-700",
+  Cafe_claro: "bg-orange-200",
 };
