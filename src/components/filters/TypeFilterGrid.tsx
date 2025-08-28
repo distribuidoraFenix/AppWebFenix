@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/utils/supabaseClient";
 import FilterTypeCard from "@/components/common/FilterTypeCard";
 
 export interface TypeCar {

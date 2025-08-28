@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/utils/supabaseClient";
 import CarCard from "@/components/common/CarCard";
 import { ArrowLeft } from "lucide-react";
 
@@ -97,7 +97,7 @@ export default function ResultadosClient() {
 
       {/* 🔙 Botón flotante */}
       <button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/dashboard")}
         className="fixed bottom-6 right-6 flex items-center gap-2 bg-red-950 text-gray-200 px-3 py-3 rounded-full shadow-lg hover:bg-red-800 transition"
       >
         <ArrowLeft size={18} />

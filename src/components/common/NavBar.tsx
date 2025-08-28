@@ -1,14 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabaseClient";
+import type { User } from "@supabase/supabase-js"; // 👈 Importamos el tipo
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null); // 👈 Tipado correcto
   const router = useRouter();
+
+  // Obtener usuario al montar el navbar
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user ?? null);
+    };
+    getUser();
+
+    // Suscribirse a cambios de sesión
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      subscription.subscription.unsubscribe();
+    };
+  }, []);
+
+  // 🔹 Función cerrar sesión
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
 
   return (
     <>
@@ -25,10 +54,10 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Sección central: Logo → redirige a HomePage */}
+        {/* Sección central: Logo → redirige a Dashboard */}
         <div className="flex-1 flex justify-center">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
             className="focus:outline-none"
             aria-label="Ir a inicio"
           >
@@ -42,16 +71,20 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Sección derecha: Buscar + Usuario y Rol al lado */}
+        {/* Sección derecha: Usuario y Rol */}
         <div className="w-1/5 flex items-center justify-end gap-5 text-sm font-medium text-gray-700">
           <div className="flex flex-col leading-tight text-left">
-            <span className="text-gray-900 font-bold italic">Admin</span>
-            <span className="text-gray-900 font-bold italic">Administrador</span>
+            <span className="text-gray-900 font-bold italic">
+              {user?.email ?? "Invitado"}
+            </span>
+            <span className="text-gray-700 font-bold italic">
+              {user ? "Ejecutivo de ventas" : "Sin sesión"}
+            </span>
           </div>
         </div>
       </nav>
 
-      {/* OVERLAY (fondo oscuro) */}
+      {/* OVERLAY */}
       {open && (
         <div
           className="fixed inset-0 bg-black/40 z-40"
@@ -78,7 +111,7 @@ export default function Navbar() {
         </div>
 
         {/* Opciones del menú */}
-        <div className=" flex flex-col p-4 space-y-4 ">
+        <div className="flex flex-col p-4 space-y-4">
           <Link
             href="/cotizacion"
             className="text-gray-800 hover:text-violet-600 font-medium"
@@ -88,16 +121,19 @@ export default function Navbar() {
           </Link>
           <Link
             href="/requisitos"
-            className="text-gray-800 hover:text-violet-600  font-medium"
+            className="text-gray-800 hover:text-violet-600 font-medium"
             onClick={() => setOpen(false)}
           >
             Requisitos
           </Link>
         </div>
 
-        {/* Cerrar sesión fijo abajo */}
+        {/* Cerrar sesión */}
         <div className="absolute bottom-0 w-full p-4 border-t">
-          <button className="w-full bg-red-500 text-white font-semibold py-2 rounded hover:bg-red-600">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-500 text-white font-semibold py-2 rounded hover:bg-red-600"
+          >
             Cerrar Sesión
           </button>
         </div>

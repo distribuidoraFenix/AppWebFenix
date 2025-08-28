@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/utils/supabaseClient";
 import { colorMap } from "@/utils/colors";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";

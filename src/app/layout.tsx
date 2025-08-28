@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/common/NavBar"; // 
+import NavbarWrapper from "@/components/common/NavbarWrapper";
 
 export const metadata: Metadata = {
   title: "Distribuidora Fenix",
   description: "App web de Distribuidora Fenix",
   icons: {
-    icon: "/logos/fenixlogo.webp", // favicon 
+    icon: "/logos/fenixlogo.webp",
   },
 };
 
@@ -18,11 +18,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="bg-gray-800 text-gray-200">
-        {/* Navbar siempre arriba */}
-        <Navbar />
-      
+        {/* Navbar condicional */}
+        <NavbarWrapper />
 
-        {/* Aquí renderizan las páginas */}
         <main className="p-2">{children}</main>
       </body>
     </html>
