@@ -44,7 +44,7 @@ export default function CarCard({ car }: { car: Car }) {
       </div>
 
       {/* Imagen vehículo */}
-      <div className="flex justify-center">
+      <div className="flex justify-center h-50">
         <Image
           src={car.imagen}
           alt={car.nombre}

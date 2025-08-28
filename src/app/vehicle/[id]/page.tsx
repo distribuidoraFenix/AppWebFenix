@@ -114,42 +114,70 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
     );
   }
 
+  // 👇 función para redirigir a cotización con precio y nombre
+  const handleCotizar = () => {
+    router.push(`/cotizacion?precio=${car.precio}&nombre=${encodeURIComponent(car.nombre)}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-300 flex flex-col items-center p-4 relative">
       <div className="max-w-4xl w-full bg-white p-6 rounded-xl shadow-md space-y-8">
-        {/* 🔹 Sección 1: Marca + Nombre/Año */}
-        <section className="flex flex-col md:flex-row items-center md:items-start">
-          <div className="w-full md:w-1/3 flex justify-center items-center mb-4 md:mb-0">
+        {/* 🔹 Sección 1: Marca + Nombre/Año */}      
+        <section className="flex flex-row items-center justify-start gap-4">
+          {/* Imagen → 20% */}
+          <div className="w-1/5 flex justify-center items-center">
             {brand ? (
               <Image
                 src={brand.logo_url}
                 alt="Logo Marca"
                 width={96}
                 height={96}
-                className="w-24 h-24 object-contain"
+                className="w-16 h-16 md:w-24 md:h-24 object-contain"
               />
             ) : (
-              <p className="text-gray-500">Sin logo</p>
+              <p className="text-gray-500 text-sm">Sin logo</p>
             )}
           </div>
 
-          <div className="w-full md:w-2/3 text-left space-y-2">
-            <h2 className="text-xl font-bold text-gray-800">{car.nombre}</h2>
-            <p className="text-gray-600">Año: {car.ano}</p>
+          {/* Texto → 80% */}
+          <div className="w-4/5 flex flex-col justify-center text-left space-y-1">
+            <h2 className="text-lg md:text-xl font-bold text-gray-800">{car.nombre}</h2>
+            <p className="text-gray-600 text-sm md:text-base">Año: {car.ano}</p>
           </div>
         </section>
 
-        {/* 🔹 Sección 2: Imagen principal + Precio */}
-        <section className="flex flex-col items-center space-y-4">
-          <Image
-            key={mainImage}
-            src={mainImage}
-            alt={car.nombre}
-            width={320}
-            height={320}
-            className="w-80 h-80 object-contain rounded-lg shadow-md transition-all duration-500 ease-in-out"
-          />
-          <p className="text-2xl font-semibold text-blue-700">${car.precio}</p>
+        {/* 🔹 Sección 2: Imagen principal + Datos */}
+        <section className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          {/* Imagen → 50% */}
+          <div className="w-full sm:w-1/2 flex justify-center">
+            <Image
+              key={mainImage}
+              src={mainImage}
+              alt={car.nombre}
+              width={320}
+              height={320}
+              className="w-72 h-40 sm:w-80 sm:h-60 object-contain rounded-lg shadow-md transition-all duration-500 ease-in-out"
+            />
+          </div>
+
+          {/* Datos → 50% */}
+          <div className="w-full sm:w-1/2 flex flex-col justify-center items-start space-y-3 text-left">
+            <p className="text-2xl font-semibold text-green-900">
+              $ <span className="text-gray-900"> {car.precio}</span>
+            </p>
+            <p className="text-gray-900 font-bold text-lg">
+              Pasajeros: <span className="font-medium">{details[0]?.pasajeros || "Sin información"}</span>
+            </p>
+            <p className="text-gray-900 font-bold text-lg">
+              Cilindrada: <span className="font-medium">{details[0]?.cilindrada || "Sin información"} cc</span>
+            </p>
+            <button
+              onClick={handleCotizar}
+              className="mt-2 px-5 py-2 bg-green-600 border border-l-green-950 text-white font-semibold rounded-lg  hover:bg-green-700 transition"
+            >
+              Cotizar
+            </button>
+          </div>
         </section>
 
         {/* 🔹 Sección 3: Colores disponibles */}
@@ -165,7 +193,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
                   <button
                     key={color.id}
                     onClick={() => setMainImage(color.url_car_color)}
-                    className={`w-10 h-10 rounded-xl shadow-md ${colorClass} transition-transform duration-300 hover:scale-110`}
+                    className={`w-10 h-10 rounded-xl shadow-md border border-gray-700 ${colorClass} transition-transform duration-300 hover:scale-110`}
                     title={color.name_color}
                   />
                 );
@@ -175,178 +203,172 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
         </section>
 
         {/* 🔹 Sección 4: Especificaciones básicas */}
-        <section>
-          <h2 className="text-xl font-bold mb-4 text-blue-800">Especificaciones básicas</h2>
-         {/* 🔹 Sección 4: Especificaciones básicas */}
-<section> 
+        <section> 
+          {/* Contenedor grid responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 ">
 
-  {/* Contenedor grid responsive */}
-  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 ">
+            {/* Card 1 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/motor.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800 pl-2 sm:pl-6">
+                {details[0]?.motor || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 1 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/motor.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-      />
-      <p className="text-sm font-semibold text-gray-800 pl-2 sm:pl-6">
-        {details[0]?.motor || "Sin información"}
-      </p>
-    </div>
+            {/* Card 2 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/transmision.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                  {details[0]?.s_transmision || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 2 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/transmision.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
-      />
-      <p className="text-sm font-semibold text-gray-800">
-           {details[0]?.s_transmision || "Sin información"}
-      </p>
-    </div>
+            {/* Card 3 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/traccion.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800">
+              {details[0]?.traccion || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 3 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/traccion.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-      />
-      <p className="text-sm font-semibold text-gray-800">
-       {details[0]?.traccion || "Sin información"}
-      </p>
-    </div>
+            {/* Card 4 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/combustible.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
+              />
+              <p className="text-sm font-semibold text-gray-800">
+              {details[0]?.tipo_combustible || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 4 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/combustible.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
-      />
-      <p className="text-sm font-semibold text-gray-800">
-       {details[0]?.tipo_combustible || "Sin información"}
-      </p>
-    </div>
+            {/* Card 5 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/torque.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                {details[0]?.torque || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 5 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/torque.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-      />
-      <p className="text-sm font-semibold text-gray-800">
-        {details[0]?.torque || "Sin información"}
-      </p>
-    </div>
+            {/* Card 6 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/hp.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                {details[0]?.hp_rpm || "Sin información"}
+              </p>
+            </div>
 
-    {/* Card 6 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/hp.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"        
-      />
-      <p className="text-sm font-semibold text-gray-800">
-        {details[0]?.hp_rpm || "Sin información"}
-      </p>
-    </div>
+            {/* Card 7 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/tanque.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
 
-    {/* Card 7 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/tanque.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                {details[0]?.tanque || "Sin información"}
+              </p>
+            </div>
 
-      />
-      <p className="text-sm font-semibold text-gray-800">
-        {details[0]?.tanque || "Sin información"}
-      </p>
-    </div>
+            {/* Card 8 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/direccion.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
 
-    {/* Card 8 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/direccion.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                {details[0]?.neumatico || "Sin información"}
+              </p>
+            </div>
 
-      />
-      <p className="text-sm font-semibold text-gray-800">
-        {details[0]?.neumatico || "Sin información"}
-      </p>
-    </div>
+            {/* Card 9 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/frenos.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                      className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
 
-    {/* Card 9 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/frenos.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-               className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800">
+                {details[0]?.s_frenos || "Sin información"}
+              </p>
+            </div>
 
-      />
-      <p className="text-sm font-semibold text-gray-800">
-        {details[0]?.s_frenos || "Sin información"}
-      </p>
-    </div>
+              {/* Card 10 */}
+            <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
+              <Image
+                src="/icons/frenos.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
 
-      {/* Card 10 */}
-    <div className="w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-4">
-      <Image
-        src="/icons/frenos.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800 pl-6">
+                {details[0]?.frenos || "Sin información"}
+              </p>
+            </div>
 
-      />
-      <p className="text-sm font-semibold text-gray-800 pl-6">
-        {details[0]?.frenos || "Sin información"}
-      </p>
-    </div>
+            {/* Card 11 */}
+            <div className="p-2 w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-2">
+              <Image
+                src="/icons/suspension.svg"
+                alt="Motor"
+                width={64}
+                height={64}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+              <p className="text-sm font-semibold text-gray-800 pl-6">
+                {details[0]?.s_suspension || "Sin información"}
 
-    {/* Card 11 */}
-    <div className="p-2 w-full h-40 bg-gray-100 rounded-xl border border-gray-700 flex flex-col items-center justify-center space-y-2">
-      <Image
-        src="/icons/suspension.svg"
-        alt="Motor"
-        width={64}
-        height={64}
-        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-      />
-      <p className="text-sm font-semibold text-gray-800 pl-6">
-        {details[0]?.s_suspension || "Sin información"}
+              </p>
+            </div>
 
-      </p>
-    </div>
-
-  </div>
+          </div>
 </section>
 
-          
-        </section>
       </div>
 
       {/* 🔘 Botón flotante volver */}
