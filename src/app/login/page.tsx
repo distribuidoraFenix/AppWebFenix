@@ -20,10 +20,17 @@ export default function LoginPage() {
       password,
     });
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+   if (error) {
+  // 🔹 Validación personalizada
+  if (error.message.includes("missing email or phone")) {
+    setError("Por favor ingresa tu correo.");
+  } else if (error.message.includes("Invalid login credentials")) {
+    setError("Correo o contraseña incorrectos.");
+  } else {
+    setError("Ocurrió un error, intenta de nuevo.");
+  }
+  return;
+}
 
     console.log("✅ Sesión iniciada:", data);
 
@@ -41,7 +48,6 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm flex flex-col items-center"
       >
-        {/* ✅ Logo centrado arriba */}
         <div className="mb-4 flex justify-center">
           <Image
             src="/logos/fenixlogo.webp"
@@ -53,7 +59,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Login</h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Iniciar Session</h1>
 
         {error && <p className="text-red-600 mb-2">{error}</p>}
 
