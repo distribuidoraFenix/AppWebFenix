@@ -165,7 +165,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
                   <button
                     key={color.id}
                     onClick={() => setMainImage(color.url_car_color)}
-                    className={`w-12 h-12 rounded-full shadow-md ${colorClass} transition-transform duration-300 hover:scale-110`}
+                    className={`w-10 h-10 rounded-xl shadow-md ${colorClass} transition-transform duration-300 hover:scale-110`}
                     title={color.name_color}
                   />
                 );
@@ -178,10 +178,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
         <section>
           <h2 className="text-xl font-bold mb-4 text-blue-800">Especificaciones básicas</h2>
          {/* 🔹 Sección 4: Especificaciones básicas */}
-<section>
-  <h2 className="text-xl font-bold mb-4 text-green-800">
-    Especificaciones básicas
-  </h2>
+<section> 
 
   {/* Contenedor grid responsive */}
   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 ">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,10 +44,9 @@ export default function Navbar() {
 
         {/* Sección derecha: Buscar + Usuario y Rol al lado */}
         <div className="w-1/5 flex items-center justify-end gap-5 text-sm font-medium text-gray-700">
-          <Search className="w-6 h-6 cursor-pointer" />
           <div className="flex flex-col leading-tight text-left">
-            <span className="text-gray-900">Usuario: Admin</span>
-            <span className="text-gray-900">Rol: Administrador</span>
+            <span className="text-gray-900 font-bold italic">Admin</span>
+            <span className="text-gray-900 font-bold italic">Administrador</span>
           </div>
         </div>
       </nav>

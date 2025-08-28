@@ -5,6 +5,9 @@ import Navbar from "@/components/common/NavBar"; //
 export const metadata: Metadata = {
   title: "Distribuidora Fenix",
   description: "App web de Distribuidora Fenix",
+  icons: {
+    icon: "/logos/fenixlogo.webp", // favicon 
+  },
 };
 
 export default function RootLayout({
