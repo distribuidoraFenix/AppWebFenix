@@ -73,7 +73,7 @@ export default function Navbar() {
         </div>
 
         {/* Sección derecha: Usuario y Rol */}
-        <div className="w-1/5 flex items-center justify-end gap-5 text-sm font-medium text-gray-700">
+        <div className="hidden w-1/5 sm:flex items-center justify-end gap-5 text-sm font-medium text-gray-700">
           <div className="flex flex-col leading-tight text-left">
             <span className="text-gray-900 font-bold italic">
               {user?.email ?? "Invitado"}
