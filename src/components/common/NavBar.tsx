@@ -6,11 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabaseClient";
-import type { User } from "@supabase/supabase-js"; // 👈 Importamos el tipo
+import type { User } from "@supabase/supabase-js"; 
+import { DollarSign, List } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // 👈 Tipado correcto
+  const [user, setUser] = useState<User | null>(null); // 
   const router = useRouter();
 
   // Obtener usuario al montar el navbar
@@ -111,21 +112,24 @@ export default function Navbar() {
         </div>
 
         {/* Opciones del menú */}
-        <div className="flex flex-col p-4 space-y-4">
+        <div className="flex flex-col p-4 space-y-4 bg-gray-200">
           <Link
             href="/cotizacion"
-            className="text-gray-800 hover:text-violet-600 font-medium"
+            className="text-gray-800 hover:text-violet-600 font-bold text-md ml-2"
             onClick={() => setOpen(false)}
-          >
-            Cotización
+          >     
+           COTIZACIÓN
+         
           </Link>
-          <Link
+           <hr className="border-1 border-gray-500" />        
+            <Link
             href="/requisitos"
-            className="text-gray-800 hover:text-violet-600 font-medium"
+            className="text-gray-800 hover:text-violet-600 font-bold text-md ml-2"
             onClick={() => setOpen(false)}
           >
-            Requisitos
+            REQUISITOS
           </Link>
+         
         </div>
 
         {/* Cerrar sesión */}
