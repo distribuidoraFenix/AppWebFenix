@@ -268,7 +268,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
             {/* Columna derecha 80% */}
             <div className="w-4/5 flex items-center justify-start p-4">
               <p className="text-sm sm:text-base font-semibold text-gray-800">
-                {details[0]?.motor || "Sin información"}
+                {details[0]?.traccion || "Sin información"}
               </p>
             </div>
           </div>  
@@ -446,7 +446,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
             {/* Columna izquierda 20% */}
             <div className="w-2/5 sm:w-3/5 md:4/5 flex flex-col items-center justify-center space-y-2 border-r border-gray-300">
               <Image
-                src="/icons/suspension.svg"
+                src="/icons/inyeccion.svg"
                 alt="Alimentacion"
                 width={48}
                 height={48}
