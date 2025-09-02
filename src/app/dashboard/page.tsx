@@ -81,7 +81,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <main className="flex h-screen items-center justify-center">
-        <p className="text-gray-500">Cargando dashboard...</p>
+        <p className="text-gray-500">Cargando...</p>
       </main>
     );
   }
