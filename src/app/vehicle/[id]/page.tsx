@@ -120,7 +120,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
   };
 
   return (
-    <div className="min-h-screen bg-gray-300 flex flex-col items-center p-4 relative">
+    <div className="min-h-screen bg-gray-800 flex flex-col items-center p-4 relative">
       <div className="max-w-4xl w-full bg-white p-6 rounded-xl shadow-md space-y-8">
         {/* 🔹 Sección 1: Marca + Nombre/Año */}      
         <section className="flex flex-row items-center justify-start gap-4">

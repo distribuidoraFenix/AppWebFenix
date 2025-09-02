@@ -451,18 +451,18 @@ export default function RequisitosPage() {
               onChange={(e) => setWhatsappNumber(e.target.value)}
               className="w-full border p-2 rounded mb-3 text-blue-950 font-bold"
             />
-            <div className="flex flex-col gap-2">
-              <button
+            <div className="flex justify-between w-full">
+             {/*  <button
                 onClick={() => enviarWhatsapp(false)}
                 className="px-2 py-2 bg-green-600 text-white rounded hover:bg-green-500"
               >
                 Enviar con WhatsApp
-              </button>
+              </button> */}
               <button
                 onClick={() => enviarWhatsapp(true)}
                 className="px-2 py-2 bg-green-950 text-white rounded hover:bg-green-800"
               >
-                Enviar con WhatsApp Business
+                Enviar con WhatsApp 
               </button>
               <button
                 onClick={() => setShowModal(false)}

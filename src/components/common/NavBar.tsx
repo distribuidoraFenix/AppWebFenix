@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabaseClient";
 import type { User } from "@supabase/supabase-js"; 
-import { DollarSign, List } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -42,48 +41,48 @@ export default function Navbar() {
 
   return (
     <>
-      {/* NAVBAR */}
-      <nav className="w-full h-14 flex items-center justify-between px-4 shadow-sm bg-violet-300">
-        {/* Sección izquierda: Menú */}
-        <div className="w-1/5 flex items-center">
-          <button
-            aria-label="Abrir menú"
-            onClick={() => setOpen(true)}
-            className="p-1"
-          >
-            <Menu className="w-7 h-7 text-gray-700 cursor-pointer" />
-          </button>
-        </div>
+    {/* NAVBAR */}
+<nav className="fixed top-0 left-0 w-full h-14 flex items-center justify-between px-4 shadow-sm bg-violet-300 z-50">
+  {/* Sección izquierda: Menú */}
+  <div className="w-1/5 flex items-center">
+    <button
+      aria-label="Abrir menú"
+      onClick={() => setOpen(true)}
+      className="p-1"
+    >
+      <Menu className="w-7 h-7 text-gray-700 cursor-pointer" />
+    </button>
+  </div>
 
-        {/* Sección central: Logo → redirige a Dashboard */}
-        <div className="flex-1 flex justify-center">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="focus:outline-none"
-            aria-label="Ir a inicio"
-          >
-            <Image
-              src="/logos/fenixlogo.webp"
-              alt="Distribuidora Fenix"
-              width={40}
-              height={40}
-              priority
-            />
-          </button>
-        </div>
+  {/* Sección central: Logo → en móviles va a la derecha, en sm vuelve al centro */}
+  <div className="flex-1 flex justify-end sm:justify-center">
+    <button
+      onClick={() => router.push("/dashboard")}
+      className="focus:outline-none"
+      aria-label="Ir a inicio"
+    >
+      <Image
+        src="/logos/fenixlogo.webp"
+        alt="Distribuidora Fenix"
+        width={40}
+        height={40}
+        priority
+      />
+    </button>
+  </div>
 
-        {/* Sección derecha: Usuario y Rol */}
-        <div className="hidden w-1/5 sm:flex items-center justify-end gap-5 text-sm font-medium text-gray-700">
-          <div className="flex flex-col leading-tight text-left">
-            <span className="text-gray-900 font-bold italic">
-              {user?.email ?? "Invitado"}
-            </span>
-            <span className="text-gray-700 font-bold italic">
-              {user ? "Ejecutivo de ventas" : "Sin sesión"}
-            </span>
-          </div>
-        </div>
-      </nav>
+  {/* Sección derecha: Usuario y Rol → solo desde sm */}
+  <div className="hidden sm:flex w-1/5 items-center justify-end gap-5 text-sm font-medium text-gray-700">
+    <div className="flex flex-col leading-tight text-left">
+      <span className="text-gray-900 font-bold italic">
+        {user?.email ?? "Invitado"}
+      </span>
+      <span className="text-gray-700 font-bold italic">
+        {user ? "Ejecutivo de ventas" : "Sin sesión"}
+      </span>
+    </div>
+  </div>
+</nav>
 
       {/* OVERLAY */}
       {open && (
@@ -95,7 +94,7 @@ export default function Navbar() {
 
       {/* SIDEBAR */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-800 shadow-lg z-50 transform transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >

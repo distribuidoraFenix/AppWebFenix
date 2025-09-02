@@ -21,7 +21,7 @@ export default function RootLayout({
         {/* Navbar condicional */}
         <NavbarWrapper />
 
-        <main className="p-2">{children}</main>
+        <main className="pt-14">{children}</main>
       </body>
     </html>
   );
