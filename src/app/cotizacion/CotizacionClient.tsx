@@ -14,19 +14,21 @@ export default function CotizacionPage() {
   const [interes, setInteres] = useState<number>(14.0);
   const [cuotaMensual, setCuotaMensual] = useState<number | "">("");
 
-  // ✅ Si recibimos precio, lo colocamos en el input automáticamente
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false);
+  const [numeroWhatsapp, setNumeroWhatsapp] = useState("");
+
+  // Coloca el precio recibido automáticamente
   useEffect(() => {
     if (precioRecibido) {
       setCostoTotal(precioRecibido);
     }
   }, [precioRecibido]);
 
-  // ✅ Calcular monto a financiar automáticamente
+  // Calcular monto a financiar automáticamente
   useEffect(() => {
     const costoTotalReal = costoTotal ? Number(costoTotal) * 7 : 0;
     const cuotaInicialReal = cuotaInicial ? Number(cuotaInicial) * 7 : 0;
     const montoAFinanciar = costoTotalReal - cuotaInicialReal;
-
     setMontoFinanciar(montoAFinanciar > 0 ? montoAFinanciar : 0);
   }, [costoTotal, cuotaInicial]);
 
@@ -34,11 +36,8 @@ export default function CotizacionPage() {
     const tasaMensual = interes / 100 / 12;
     const plazoMeses = plazo;
     const cuota =
-      (montoFinanciar * tasaMensual) /
-        (1 - Math.pow(1 + tasaMensual, -plazoMeses)) -
-      200;
-
-    setCuotaMensual(Math.round(cuota)); // ✅ sin decimales
+      (montoFinanciar * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses)) - 200;
+    setCuotaMensual(Math.round(cuota)); // sin decimales
   };
 
   const handleReset = () => {
@@ -48,12 +47,36 @@ export default function CotizacionPage() {
     setPlazo(72);
     setInteres(14.0);
     setCuotaMensual("");
+    setShowWhatsappModal(false);
+    setNumeroWhatsapp("");
   };
 
   // Campos calculados
   const costoTotalCalc = costoTotal ? Number(costoTotal) * 7 : "";
   const cuotaInicialCalc = cuotaInicial ? Number(cuotaInicial) * 7 : "";
   const montoFinanciarCalc = montoFinanciar ? montoFinanciar : "";
+
+  // Función para enviar WhatsApp
+  const enviarWhatsapp = (business = false) => {
+    if (!numeroWhatsapp) return alert("Ingresa un número de WhatsApp");
+
+    const mensaje = 
+      `*COTIZACIÓN*\n` +
+      `*COSTO TOTAL DEL VEHÍCULO:* $. ${costoTotal || 0}\n` +
+      `*CUOTA INICIAL:* $. ${cuotaInicial || 0} (Bs. ${cuotaInicial ? Number(cuotaInicial) * 7 : 0})\n` +
+      `*MONTO A FINANCIAR:* $. ${costoTotal && cuotaInicial ? Number(costoTotal) - Number(cuotaInicial) : 0} (Bs. ${costoTotal && cuotaInicial ? (Number(costoTotal) - Number(cuotaInicial)) * 7 : 0})\n` +
+      `*PLAZO:* ${plazo} meses\n` +
+      `*INTERÉS %:* ${interes}%\n` +
+      `*CUOTA APROXIMADA Bs.:* *_${cuotaMensual}_*`;
+
+    const url = business
+      ? `whatsapp://send?phone=${numeroWhatsapp}&text=${encodeURIComponent(mensaje)}`
+      : `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, "_blank");
+    setShowWhatsappModal(false);
+    setNumeroWhatsapp("");
+  };
 
   return (
     <div className="min-h-screen bg-gray-300 flex flex-col items-center p-4">
@@ -67,9 +90,7 @@ export default function CotizacionPage() {
           {/* Costo Total */}
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <label className="w-full sm:w-1/2 italic text-gray-800 font-bold">Costo total</label>
-            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">
-              C.T. bolivianos
-            </label>
+            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">C.T. bolivianos</label>
           </div>
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <input
@@ -77,7 +98,7 @@ export default function CotizacionPage() {
               placeholder="Costo Total"
               value={costoTotal}
               onChange={(e) => setCostoTotal(e.target.value)}
-              className="w-full sm:w-1/2 p-3 border rounded box-border font-semibold text-gray-800  "
+              className="w-full sm:w-1/2 p-3 border rounded box-border font-semibold text-gray-800"
             />
             <input
               type="number"
@@ -90,9 +111,7 @@ export default function CotizacionPage() {
           {/* Cuota Inicial */}
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <label className="w-full sm:w-1/2 italic text-gray-800 font-bold">Cuota inicial</label>
-            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">
-              C.I. bolivianos
-            </label>
+            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">C.I. bolivianos</label>
           </div>
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full text-gray-800">
             <input
@@ -113,9 +132,7 @@ export default function CotizacionPage() {
           {/* Monto a Financiar */}
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <label className="w-full sm:w-1/2 italic text-gray-800 font-bold">Financiamiento</label>
-            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">
-              F. bolivianos
-            </label>
+            <label className="w-full sm:w-1/2 font-bold text-green-900 italic">F. bolivianos</label>
           </div>
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <input
@@ -164,23 +181,104 @@ export default function CotizacionPage() {
         </div>
       </div>
 
-      {/* ✅ Resultado en cuadro separado */}
+      {/* Resultado */}
       {cuotaMensual && (
-        <div className="max-w-3xl w-full bg-white p-6 mt-6 rounded-lg shadow-lg text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 italic">
-            Cuota mensual <span className="text-red-900">APROXIMADA</span>
-          </h2>
-          <p className="text-green-800 text-3xl font-bold italic">
-            Bs. {cuotaMensual}
-          </p>
+        <div className="max-w-sm w-full bg-white p-6 mt-6 rounded-lg shadow-lg">
+          <h2 className="text-lg font-bold text-center text-blue-800 mb-6">COTIZACIÓN APROXIMADA</h2>
+          {/* Detalles intactos */}
+          <div className="flex flex-col gap-3 text-gray-800 font-semibold">
+            <div className="flex justify-between border-b border-gray-300 pb-2">
+              <span>COSTO TOTAL:</span>
+              <span>$. {costoTotal || 0}</span>
+            </div>            
+            <div className="flex justify-between items-center border-b border-gray-300 pb-2">
+              <span>CUOTA INICIAL:</span>
+              <div className="flex flex-col items-end">
+                <div>
+                  <span>$. {cuotaInicial}</span>
+                </div>
+                <div>
+                   <span>(Bs. {cuotaInicial ? Number(cuotaInicial) * 7 : 0})</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center border-b border-gray-300 pb-2">
+              <span>FINANCIAMIENTO:</span>
+              <div className="flex flex-col items-end">
+                <div>
+                  <span>$. {costoTotal && cuotaInicial ? Number(costoTotal) - Number(cuotaInicial) : 0}</span>
+                </div>
+                <div>
+                  <span>(Bs. {costoTotal && cuotaInicial ? (Number(costoTotal) - Number(cuotaInicial)) * 7 : 0})</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between border-b border-gray-300 pb-2">
+              <span>PLAZO:</span>
+              <span>{plazo} meses</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-300 pb-2">
+              <span>INTERÉS %:</span>
+              <span>{interes}%</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-300 pb-2 bg-green-400 p-2 rounded">
+              <span>CUOTA MENSUAL:</span>
+              <span>Bs. {cuotaMensual}</span>
+            </div>
+          </div>
 
-          <div className="flex justify-center mt-6">
+          {/* Botones */}
+          <div className="flex justify-center sm:justify-between mt-6 gap-4">
             <button
               onClick={handleReset}
-              className="px-8 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+              className="px-6 py-2 bg-red-900 text-white rounded hover:bg-red-700"
             >
               Resetear
             </button>
+            <button
+              onClick={() => setShowWhatsappModal(true)}
+              className="px-6 py-2 bg-green-900 text-white rounded hover:bg-green-500"
+            >
+              Enviar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de WhatsApp */}
+      {showWhatsappModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-lg font-bold mb-4 text-center text-gray-600"> Enviar por WhatsApp</h3>
+
+            <input
+              type="text"
+              placeholder="Número de WhatsApp"
+              value={numeroWhatsapp}
+              onChange={(e) => setNumeroWhatsapp(e.target.value)}
+              className="w-full p-2 border border-gray-700 rounded mb-4 text-gray-600 font-bold"
+            />
+
+            <div className="flex flex-col gap-2">
+              {/* <button
+                onClick={() => enviarWhatsapp(false)}
+                className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500"
+              >
+                Enviar Normal
+              </button> */}
+              <button
+                onClick={() => enviarWhatsapp(true)}
+                className="w-full px-4 py-2 bg-green-800 text-white rounded hover:bg-green-600"
+              >
+                Enviar Business
+              </button>
+              <button
+                onClick={() => setShowWhatsappModal(false)}
+                className="w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

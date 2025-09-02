@@ -90,9 +90,9 @@ export default function DashboardPage() {
     <main className="space-y-8 p-4">
       {/* Filtro de Marcas */}
       <section>
-        <h3 className="text-base md:text-xl pb-4 italic">
+        <h5 className="text-base md:text-lg pb-4 italic">
           Selecciona la marca y el tipo de vehículo que buscas
-        </h3>
+        </h5>
         <h2 className="text-lg font-semibold mb-2">Marcas</h2>
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-6 lg:grid-cols-10 xl:grid-cols-12 gap-4">
           {brands.map((brand) => (
