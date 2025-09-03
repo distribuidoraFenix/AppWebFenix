@@ -34,7 +34,9 @@ export default function TypeFilterGrid({
     const fetchTypes = async () => {
       const { data, error } = await supabase
         .from("typeCar")
-        .select("id, tipo_vehiculo, icono_url");
+        .select("id, tipo_vehiculo, icono_url")
+        .eq("active", true)
+        .order("tipo_vehiculo", { ascending: true }); // orden del los resultados;
 
       if (error) {
         console.error("❌ Error al cargar tipos:", error.message);

@@ -29,7 +29,7 @@ export default function DashboardPage() {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        router.replace("/login"); // 👈 redirigir si no hay sesión
+        router.replace("/login"); // redirigir si no hay sesión
       } else {
         setLoading(false); // continuar cargando el dashboard
       }
@@ -44,7 +44,8 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from("brands")
         .select("*")
-        .eq("active", true);
+        .eq("active", true)
+        .order("name", { ascending: true }); // orden del los resultados
 
       if (error) {
         console.error("❌ Error al cargar marcas:", error.message);

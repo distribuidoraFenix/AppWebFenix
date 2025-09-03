@@ -50,7 +50,9 @@ export default function ResultadosClient() {
         .select(`
           id, nombre, ano, precio, imagen_url, 
           brands(logo_url)
-        `);
+        `)
+        .order("precio", {ascending:true})
+        .eq("active", true);
 
       if (brandsIds.length > 0) {
         query = query.in("brand_id", brandsIds);
