@@ -6,25 +6,57 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabaseClient";
-import type { User } from "@supabase/supabase-js"; 
+
+type AppUser = {
+  id: string;
+  nombre: string;
+  usuario: string;
+  sucursal: string;
+  active: boolean;
+};
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // 
+  const [appUser, setAppUser] = useState<AppUser | null>(null);
   const router = useRouter();
 
   // Obtener usuario al montar el navbar
   useEffect(() => {
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
-      setUser(data.user ?? null);
+      const authUser = data.user ?? null;
+
+      if (authUser) {
+        const { data: appUserData, error } = await supabase
+          .from("app_users")
+          .select("id, nombre, usuario, sucursal, active")
+          .eq("id", authUser.id)
+          .single();
+
+        if (!error && appUserData) {
+          setAppUser(appUserData);
+        }
+      }
     };
+
     getUser();
 
     // Suscribirse a cambios de sesión
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user ?? null);
+        if (!session?.user) {
+          setAppUser(null);
+        } else {
+          // Se puede recargar info del appUser si se requiere
+          supabase
+            .from("app_users")
+            .select("id, nombre, usuario, sucursal, active")
+            .eq("id", session.user.id)
+            .single()
+            .then(({ data, error }) => {
+              if (!error && data) setAppUser(data);
+            });
+        }
       }
     );
 
@@ -41,48 +73,48 @@ export default function Navbar() {
 
   return (
     <>
-    {/* NAVBAR */}
-<nav className="fixed top-0 left-0 w-full h-14 flex items-center justify-between px-4 shadow-sm bg-violet-300 z-50">
-  {/* Sección izquierda: Menú */}
-  <div className="w-1/5 flex items-center">
-    <button
-      aria-label="Abrir menú"
-      onClick={() => setOpen(true)}
-      className="p-1"
-    >
-      <Menu className="w-7 h-7 text-gray-700 cursor-pointer" />
-    </button>
-  </div>
+      {/* NAVBAR */}
+      <nav className="fixed top-0 left-0 w-full h-14 flex items-center justify-between px-4 shadow-sm bg-violet-300 z-50">
+        {/* Sección izquierda: Menú */}
+        <div className="w-1/5 flex items-center">
+          <button
+            aria-label="Abrir menú"
+            onClick={() => setOpen(true)}
+            className="p-1"
+          >
+            <Menu className="w-7 h-7 text-gray-700 cursor-pointer" />
+          </button>
+        </div>
 
-  {/* Sección central: Logo → en móviles va a la derecha, en sm vuelve al centro */}
-  <div className="flex-1 flex justify-end sm:justify-center">
-    <button
-      onClick={() => router.push("/dashboard")}
-      className="focus:outline-none"
-      aria-label="Ir a inicio"
-    >
-      <Image
-        src="/logos/fenixlogo.webp"
-        alt="Distribuidora Fenix"
-        width={40}
-        height={40}
-        priority
-      />
-    </button>
-  </div>
+        {/* Sección central: Logo → en móviles va a la derecha, en sm vuelve al centro */}
+        <div className="flex-1 flex justify-end sm:justify-center">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="focus:outline-none"
+            aria-label="Ir a inicio"
+          >
+            <Image
+              src="/logos/fenixlogo.webp"
+              alt="Distribuidora Fenix"
+              width={40}
+              height={40}
+              priority
+            />
+          </button>
+        </div>
 
-  {/* Sección derecha: Usuario y Rol → solo desde sm */}
-  <div className="hidden sm:flex w-1/5 items-center justify-end gap-5 text-sm font-medium text-gray-700">
-    <div className="flex flex-col leading-tight text-left">
-      <span className="text-gray-900 font-bold italic">
-        {user?.email ?? "Invitado"}
-      </span>
-      <span className="text-gray-700 font-bold italic">
-        {user ? "Ejecutivo de ventas" : "Sin sesión"}
-      </span>
-    </div>
-  </div>
-</nav>
+        {/* Sección derecha: Usuario y Sucursal → solo desde sm */}
+        <div className="hidden sm:flex w-1/5 items-center justify-end gap-5 text-sm font-medium text-gray-700">
+          <div className="flex flex-col leading-tight text-left">
+            <span className="text-gray-900 font-bold italic">
+              {appUser?.usuario ?? "Invitado"}
+            </span>
+            <span className="text-gray-700 font-bold italic">
+              {appUser?.sucursal ?? "Sin sesión"}
+            </span>
+          </div>
+        </div>
+      </nav>
 
       {/* OVERLAY */}
       {open && (
@@ -116,19 +148,17 @@ export default function Navbar() {
             href="/cotizacion"
             className="text-gray-800 hover:text-violet-600 font-bold text-md ml-2"
             onClick={() => setOpen(false)}
-          >     
-           COTIZACIÓN
-         
+          >
+            COTIZACIÓN
           </Link>
-           <hr className="border-1 border-gray-500" />        
-            <Link
+          <hr className="border-1 border-gray-500" />
+          <Link
             href="/requisitos"
             className="text-gray-800 hover:text-violet-600 font-bold text-md ml-2"
             onClick={() => setOpen(false)}
           >
             REQUISITOS
           </Link>
-         
         </div>
 
         {/* Cerrar sesión */}

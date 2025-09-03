@@ -15,31 +15,46 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    // 1️⃣ Autenticación con Supabase
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-   if (error) {
-  // 🔹 Validación personalizada
-  if (error.message.includes("missing email or phone")) {
-    setError("Por favor ingresa tu correo.");
-  } else if (error.message.includes("Invalid login credentials")) {
-    setError("Correo o contraseña incorrectos.");
-  } else {
-    setError("Ocurrió un error, intenta de nuevo.");
-  }
-  return;
-}
-
-    console.log("✅ Sesión iniciada:", data);
-
-    if (data.session) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      setError("No se pudo iniciar sesión. Intenta nuevamente.");
+    if (authError || !authData.user) {
+      // Validación personalizada de errores
+      if (authError?.message.includes("missing email or phone")) {
+        setError("Por favor ingresa tu correo.");
+      } else if (authError?.message.includes("Invalid login credentials")) {
+        setError("Correo o contraseña incorrectos.");
+      } else {
+        setError("Ocurrió un error, intenta de nuevo.");
+      }
+      return;
     }
+
+    // 2️⃣ Verificar si el usuario está activo en app_users
+    const { data: appUser, error: userError } = await supabase
+      .from("app_users")
+      .select("active")
+      .eq("id", authData.user.id)
+      .single();
+
+    if (userError || !appUser) {
+      setError("No se pudo verificar el estado del usuario.");
+      return;
+    }
+
+    if (!appUser.active) {
+      setError("El usuario no está activo. Contacta al administrador.");
+      // Opcional: cerrar sesión inmediatamente
+      await supabase.auth.signOut();
+      return;
+    }
+
+    // 3️⃣ Usuario activo → redirigir
+    router.push("/dashboard");
+    router.refresh();
   };
 
   return (
@@ -59,7 +74,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Iniciar Session</h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Iniciar Sesión</h1>
 
         {error && <p className="text-red-600 mb-2">{error}</p>}
 
