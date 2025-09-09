@@ -10,8 +10,8 @@ export default function CotizacionPage() {
   const [costoTotal, setCostoTotal] = useState<string>("");
   const [cuotaInicial, setCuotaInicial] = useState<string>("");
   const [montoFinanciar, setMontoFinanciar] = useState<number>(0);
-  const [plazo, setPlazo] = useState<number>(72);
-  const [interes, setInteres] = useState<number>(14.0);
+  const [plazo, setPlazo] = useState<string>("84");
+  const [interes, setInteres] = useState<string>("13.0");
   const [cuotaMensual, setCuotaMensual] = useState<number | "">("");
 
   const [showWhatsappModal, setShowWhatsappModal] = useState(false);
@@ -33,7 +33,7 @@ export default function CotizacionPage() {
   }, [costoTotal, cuotaInicial]);
 
   const handleCalcular = () => {
-    const tasaMensual = interes / 100 / 12;
+    const tasaMensual = Number(interes) / 100 / 12;
     const plazoMeses = plazo;
     const cuota =
       (montoFinanciar * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses)) - 200;
@@ -44,8 +44,8 @@ export default function CotizacionPage() {
     setCostoTotal("");
     setCuotaInicial("");
     setMontoFinanciar(0);
-    setPlazo(72);
-    setInteres(14.0);
+    setPlazo("84");
+    setInteres("13.0");
     setCuotaMensual("");
     setShowWhatsappModal(false);
     setNumeroWhatsapp("");
@@ -61,7 +61,9 @@ export default function CotizacionPage() {
     if (!numeroWhatsapp) return alert("Ingresa un número de WhatsApp");
 
     const mensaje = 
-      `*COTIZACIÓN*\n` +
+      `*COTIZACIÓN CREDITO BANCARIO*\n` +
+      `* *\n` +
+
       `*COSTO TOTAL DEL VEHÍCULO:* $. ${costoTotal || 0}\n` +
       `*CUOTA INICIAL:* $. ${cuotaInicial || 0} (Bs. ${cuotaInicial ? Number(cuotaInicial) * 7 : 0})\n` +
       `*MONTO A FINANCIAR:* $. ${costoTotal && cuotaInicial ? Number(costoTotal) - Number(cuotaInicial) : 0} (Bs. ${costoTotal && cuotaInicial ? (Number(costoTotal) - Number(cuotaInicial)) * 7 : 0})\n` +
@@ -158,13 +160,13 @@ export default function CotizacionPage() {
             <input
               type="number"
               value={plazo}
-              onChange={(e) => setPlazo(Number(e.target.value))}
+              onChange={(e) => setPlazo(String(e.target.value))}
               className="w-full sm:w-1/2 p-3 border rounded font-bold text-gray-800"
             />
             <input
               type="number"
               value={interes}
-              onChange={(e) => setInteres(Number(e.target.value))}
+              onChange={(e) => setInteres(String(e.target.value))}
               className="w-full sm:w-1/2 p-3 border rounded font-bold text-gray-800"
             />
           </div>

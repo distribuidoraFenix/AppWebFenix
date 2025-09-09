@@ -14,6 +14,7 @@ type Trabajo =
   | "consultor";
 type Deudas = "si" | "no";
 type Garantia = "patrimonio" | "garante" | "vehicular";
+type Vivienda = "alquiler" | "anticretico" | "propio_sd" | "familiar" | "propietario";
 
 // Opciones y listas estáticas
 const RESPALDOS_OPCIONES: { value: Trabajo; label: string }[] = [
@@ -25,6 +26,7 @@ const RESPALDOS_OPCIONES: { value: Trabajo; label: string }[] = [
   { value: "independiente", label: "Trabajador Independiente" },
   { value: "consultor", label: "Consultor" },
 ];
+
 
 const DOCS_TRABAJO: Record<Trabajo, string[]> = {
   asalariado: [
@@ -49,6 +51,8 @@ const DOCS_TRABAJO: Record<Trabajo, string[]> = {
   transportistaa: [
     "Fotocopia de licencia de conducir",
     "Certificado o credencial de sindicato",
+    "Certificado de trabajo",
+    "Contrato de trabajo",
     "Fotografía con la herramienta de trabajo",
   ],
   productor: [
@@ -84,27 +88,48 @@ const DOCS_DEUDAS = [
   "Fotocopia de boleta de pago de la deuda",
 ];
 
+const DOCS_VIVIENDA: Record<Vivienda, string[]> = {
+    propietario: [
+    "Fotocopia de folio real o documento de compra y venta",
+    "Fotocopia de testimonio de propiedad",    
+    "Fotocopia de reconocimiento de firmas",
+    "Fotocopia del último impuesto pagado",
+    "Fotografia del domicilio",
+    ],
+    alquiler: [
+    "Fotocopia de contrato de alquiler",
+    "Fotografias del domicilio", 
+    ],
+    anticretico: [
+    "Fotocopia de contrato de anticretico",
+    "Fotografias del domicilio", 
+    ],
+    familiar: [    
+    "Fotografias del domicilio", 
+    ],
+    propio_sd: [
+    "Fotografias del domicilio", 
+    ],
+};
+
 const DOCS_GARANTIA: Record<Garantia, string[]> = {
   patrimonio: [
     "Fotocopia de folio real o documento de compra y venta",
-    "Fotocopia de testimonio de propiedad",
-    "Fotocopia de contrato de compra y venta",
+    "Fotocopia de testimonio de propiedad",   
     "Fotocopia de reconocimiento de firmas",
-    "Fotocopia del último impuesto pagado",
+    "Fotocopia del último impuesto pagado",   
   ],
   garante: [
     "Fotocopia de cédula",
     "Croquis de domicilio",
     "Facturas de agua y luz",
     "Fotocopia de folio real o documento de compra y venta",
-    "Fotocopia de testimonio de propiedad",
-    "Fotocopia de contrato de compra y venta",
+    "Fotocopia de testimonio de propiedad",    
     "Fotocopia de reconocimiento de firmas",
     "Fotocopia del último impuesto pagado",
   ],
   vehicular: [
-    "Fotocopia de contrato de alquier o anticretico",
-    "Fotografías de la fachada del domicilio",
+    "En este caso los documentos originales del vehiculo se quedarían en custodia del banco"
   ],
 };
 
@@ -114,12 +139,15 @@ export default function RequisitosPage() {
   const [respaldosTrabajo, setRespaldosTrabajo] = useState<Trabajo>("asalariado");
   const [deudas, setDeudas] = useState<Deudas>("si");
   const [tipoGarantia, setTipoGarantia] = useState<Garantia>("patrimonio");
+  const [vivienda, setVivienda] = useState<Vivienda>("propio_sd");
 
   const [showModal, setShowModal] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState("");
 
   const [seleccionRespaldos, setSeleccionRespaldos] = useState<string[]>([]);
   const [seleccionGarantia, setSeleccionGarantia] = useState<string[]>([]);
+  const [seleccionVivienda, setSeleccionVivienda] = useState<string[]>([]);
+
 
   // Documentos dinámicos
   const docsTrabajoActivos = useMemo(
@@ -129,6 +157,10 @@ export default function RequisitosPage() {
   const docsGarantiaActivos = useMemo(
     () => DOCS_GARANTIA[tipoGarantia] ?? [],
     [tipoGarantia]
+  );
+    const docsVivienda = useMemo(
+    () => DOCS_VIVIENDA[vivienda] ?? [],
+    [vivienda]
   );
 
   // Handlers
@@ -149,17 +181,25 @@ export default function RequisitosPage() {
     );
   };
 
+  const toggleSeleccionVivienda = (item: string) => {
+    setSeleccionVivienda((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
+
+  
+
   const generarMensaje = () => {
-    let mensaje = "REQUISITOS\n\n";
-    mensaje += "DOCUMENTOS PERSONALES\n";
+    let mensaje = "*REQUISITOS*\n\n";
+    mensaje += "_DOCUMENTOS PERSONALES_\n";
     if (estadoCivil === "soltero") {
-      mensaje += "- Fotocopia de carnet\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n\n";
+      mensaje += "- Fotocopia de carnet\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n- Fotografias del domicilio\n\n";
     } else {
-      mensaje += "- Fotocopia de carnet\n- Fotocopia de carnet de su pareja\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n\n";
+      mensaje += "- Fotocopia de carnet\n- Fotocopia de carnet de su pareja\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n- Fotografias del domicilio\n\n";
     }
 
     if (seleccionRespaldos.length > 0) {
-      mensaje += "RESPALDOS DE TRABAJO\n";
+      mensaje += "_RESPALDOS DE TRABAJO_\n";
       mensaje +=
         RESPALDOS_OPCIONES.find((o) => o.value === respaldosTrabajo)?.label + "\n";
       seleccionRespaldos.forEach((item) => (mensaje += `- ${item}\n`));
@@ -167,13 +207,25 @@ export default function RequisitosPage() {
     }
 
     if (deudas === "si") {
-      mensaje += "DEUDAS BANCARIAS\n";
+      mensaje += "_DEUDAS BANCARIAS_\n";
       DOCS_DEUDAS.forEach((d) => (mensaje += `- ${d}\n`));
       mensaje += "\n";
     }
 
+     if (seleccionVivienda.length > 0) {
+      mensaje += "_VIVIENDA_\n";
+      if (vivienda === "propio_sd") mensaje += "DOC. EN TRAMITE\n";
+      else if (vivienda === "alquiler") mensaje += "ALQUILER\n";
+      else if (vivienda === "anticretico") mensaje += "ANTICRETICO\n";
+      else if (vivienda === "familiar") mensaje += "CASA FAMILIAR\n";
+      else if (vivienda === "propietario") mensaje += "CASA PROPIA\n";
+
+      seleccionVivienda.forEach((item) => (mensaje += `- ${item}\n`));
+      mensaje += "\n";
+    }
+
     if (seleccionGarantia.length > 0) {
-      mensaje += "GARANTÍA\n";
+      mensaje += "*_GARANTÍA_*\n";
       if (tipoGarantia === "patrimonio") mensaje += "PATRIMONIO\n";
       else if (tipoGarantia === "garante") mensaje += "GARANTE\n";
       else if (tipoGarantia === "vehicular") mensaje += "VEHICULAR\n";
@@ -236,6 +288,7 @@ export default function RequisitosPage() {
           <li>Fotocopia de carnet</li>
           <li>Fotocopia de factura de luz y agua</li>
           <li>Croquis de domicilio</li>
+          <li>Fotografias del domicilio</li>
         </ul>
       )}
       {estadoCivil === "casado" && (
@@ -244,6 +297,7 @@ export default function RequisitosPage() {
           <li>Fotocopia de carnet de su pareja</li>
           <li>Fotocopia de factura de luz y agua</li>
           <li>Croquis de domicilio</li>
+          <li>Fotografias del domicilio</li>
         </ul>
       )}
 
@@ -312,6 +366,175 @@ export default function RequisitosPage() {
         <ul className="list-disc list-inside text-gray-700 mb-3">
           {DOCS_DEUDAS.map((d) => (
             <li key={d}>{d}</li>
+          ))}
+        </ul>
+      )}
+
+      {/* VIVIENDA */} 
+       <h2 className="text-red-600 text-base sm:text-xl font-semibold mb-2">
+        VIVIENDA
+      </h2>        
+      <fieldset className="mb-3 flex flex-col gap-2">
+        <label className="flex items-center gap-2 text-blue-950 font-bold">
+          <input
+            type="radio"
+            name="vivienda"
+            value="propietario"
+            checked={vivienda === "propietario"}
+            onChange={() => {
+              setVivienda("propietario");
+              setSeleccionVivienda([]);
+            }}
+          />
+          Propietario
+        </label>
+        <label className="flex items-center gap-2 text-blue-950 font-bold">
+          <input
+            type="radio"
+            name="vivienda"
+            value="alquiler"
+            checked={vivienda === "alquiler"}
+            onChange={() => {
+              setVivienda("alquiler");
+              setSeleccionVivienda([]);
+            }}
+          />
+        Alquiler
+        </label>
+        <label className="flex items-center gap-2 text-blue-950 font-bold">
+          <input
+            type="radio"
+            name="vivienda"
+            value="anticretico"            
+            checked={vivienda === "anticretico"}
+            onChange={() => {
+              setVivienda("anticretico");
+              setSeleccionVivienda([]);
+            }}
+          />
+          Anticretico
+        </label>
+         <label className="flex items-center gap-2 text-blue-950 font-bold">
+          <input
+            type="radio"
+            name="vivienda"
+            value="familiar"            
+            checked={vivienda === "familiar"}
+            onChange={() => {
+              setVivienda("familiar");
+              setSeleccionVivienda([]);
+            }}
+          />
+          Familiar
+        </label>
+         <label className="flex items-center gap-2 text-blue-950 font-bold">
+          <input
+            type="radio"
+            name="vivienda"
+            value="propio_sd"            
+            checked={vivienda === "propio_sd"}
+            onChange={() => {
+              setVivienda("propio_sd");
+              setSeleccionVivienda([]);
+            }}
+          />
+          Propio S/D
+        </label>
+      </fieldset>
+
+      {/* Checklists de garantía */}
+      {vivienda === "propietario" && (
+        <ul className="list-none list-inside text-gray-700 mb-3">
+          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
+            RESPALDO PATRIMONIAL CASA PROPIA
+          </h3>
+          {docsVivienda.map((item) => (
+            <li key={item}>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={seleccionVivienda.includes(item)}
+                  onChange={() => toggleSeleccionVivienda(item)}
+                />
+                {item}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      {vivienda === "alquiler" && (
+        <ul className="list-none list-inside text-gray-700 mb-3">
+          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
+            ALQUILER
+          </h3>
+          {docsVivienda.map((item) => (
+            <li key={item}>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={seleccionVivienda.includes(item)}
+                  onChange={() => toggleSeleccionVivienda(item)}
+                />
+                {item}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      {vivienda === "anticretico" && (
+        <ul className="list-none list-inside text-gray-700 mb-3">
+          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
+            ANTICRECTICO
+          </h3>
+          {docsVivienda.map((item) => (
+            <li key={item}>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={seleccionVivienda.includes(item)}
+                  onChange={() => toggleSeleccionVivienda(item)}
+                />
+                {item}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      {vivienda === "familiar" && (
+        <ul className="list-none list-inside text-gray-700 mb-3">
+          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
+            FAMILIAR
+          </h3>
+          {docsVivienda.map((item) => (
+            <li key={item}>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={seleccionVivienda.includes(item)}
+                  onChange={() => toggleSeleccionVivienda(item)}
+                />
+                {item}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      {vivienda === "propio_sd" && (
+        <ul className="list-none list-inside text-gray-700 mb-3">
+          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
+            PROPIO S/D
+          </h3>
+          {docsVivienda.map((item) => (
+            <li key={item}>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={seleccionVivienda.includes(item)}
+                  onChange={() => toggleSeleccionVivienda(item)}
+                />
+                {item}
+              </label>
+            </li>
           ))}
         </ul>
       )}
@@ -422,10 +645,7 @@ export default function RequisitosPage() {
                 {item}
               </label>
             </li>
-          ))}
-          <p className="text-gray-700 mb-3 text-xs sm:text-sm">
-            Para este caso se quedarían en custodia los papeles de la movilidad en el banco.
-          </p>
+          ))}         
         </ul>
       )}
 
