@@ -193,9 +193,9 @@ export default function RequisitosPage() {
     let mensaje = "*REQUISITOS*\n\n";
     mensaje += "_DOCUMENTOS PERSONALES_\n";
     if (estadoCivil === "soltero") {
-      mensaje += "- Fotocopia de carnet\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n- Fotografias del domicilio\n\n";
+      mensaje += "- Fotocopia de carnet\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n\n";
     } else {
-      mensaje += "- Fotocopia de carnet\n- Fotocopia de carnet de su pareja\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n- Fotografias del domicilio\n\n";
+      mensaje += "- Fotocopia de carnet\n- Fotocopia de carnet de su pareja\n- Fotocopia de factura de luz y agua\n- Croquis de domicilio\n\n";
     }
 
     if (seleccionRespaldos.length > 0) {
