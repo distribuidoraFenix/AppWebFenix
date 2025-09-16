@@ -3,16 +3,21 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+// 🔹 Tipo del vehículo
 interface Car {
   id: number;
   nombre: string;
-  ano: number; // 👈 ya sin tilde
+  ano: number; 
   precio: number;
   marcalogo: string;
   imagen: string;
 }
 
-export default function CarCard({ car }: { car: Car }) {
+interface CarCardProps {
+  car: Car;
+}
+
+export default function CarCard({ car }: CarCardProps) {
   const router = useRouter();
 
   const handleVerDetalles = () => {
@@ -56,7 +61,7 @@ export default function CarCard({ car }: { car: Car }) {
 
       {/* Precio */}
       <p className="text-gray-800 font-bold text-2xl text-center">
-        <span className="text-green-900 font-bold "> $ </span>{car.precio}
+        <span className="text-green-900 font-bold"> $ </span>{car.precio}
       </p>
 
       {/* Botones */}
