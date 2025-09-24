@@ -1,61 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/utils/supabaseClient";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 
 export default function LoginPage() {
+  const { user, loading, login } = useAuth(); // usamos sesión global
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
+
+  // 🔹 Redirigir automáticamente si ya hay sesión
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // 1️⃣ Autenticación con Supabase
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError || !authData.user) {
-      // Validación personalizada de errores
-      if (authError?.message.includes("missing email or phone")) {
-        setError("Por favor ingresa tu correo.");
-      } else if (authError?.message.includes("Invalid login credentials")) {
-        setError("Correo o contraseña incorrectos.");
-      } else {
-        setError("Ocurrió un error, intenta de nuevo.");
-      }
-      return;
+    try {
+      await login(email, password); // autenticación centralizada
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message);
+      else setError("Ocurrió un error inesperado");
     }
-
-    // 2️⃣ Verificar si el usuario está activo en app_users
-    const { data: appUser, error: userError } = await supabase
-      .from("app_users")
-      .select("active")
-      .eq("id", authData.user.id)
-      .single();
-
-    if (userError || !appUser) {
-      setError("No se pudo verificar el estado del usuario.");
-      return;
-    }
-
-    if (!appUser.active) {
-      setError("El usuario no está activo. Contacta al administrador.");
-      // Opcional: cerrar sesión inmediatamente
-      await supabase.auth.signOut();
-      return;
-    }
-
-    // 3️⃣ Usuario activo → redirigir
-    router.push("/dashboard");
-    router.refresh();
   };
+
+  // 🔹 Mientras se verifica sesión, no renderizamos el formulario
+  if (loading || user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Verificando sesión...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 sm:p-1 min-h-screen flex items-center justify-center bg-gray-900">

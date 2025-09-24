@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/supabaseClient";
+import ProtectedRoute from "@/components/common/ProtectedRoute";
 import FilterBrandCard from "@/components/common/FilterBrandCard";
 import TypeFilterGrid from "@/components/filters/TypeFilterGrid";
 
@@ -15,28 +16,20 @@ interface Brand {
 }
 
 export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  );
+}
+
+// 🔹 Separar contenido real del dashboard
+function DashboardContent() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  // 🔹 Verificar sesión al cargar
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.replace("/login"); // redirigir si no hay sesión
-      } else {
-        setLoading(false); // continuar cargando el dashboard
-      }
-    };
-
-    checkSession();
-  }, [router]);
 
   // 🔹 Fetch de marcas activas
   useEffect(() => {
@@ -45,40 +38,29 @@ export default function DashboardPage() {
         .from("brands")
         .select("*")
         .eq("active", true)
-        .order("name", { ascending: true }); // orden del los resultados
+        .order("name", { ascending: true });
 
-      if (error) {
-        console.error("❌ Error al cargar marcas:", error.message);
-      } else {
-        setBrands(data || []);
-      }
+      if (error) console.error("❌ Error al cargar marcas:", error.message);
+      else setBrands(data || []);
     };
 
     fetchBrands();
+    setLoading(false); // fin de la carga inicial
   }, []);
 
-  // Toggle marcas
   const handleToggleBrand = (id: number) => {
     setSelectedBrands((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
-  // 🔹 Navegar con filtros seleccionados
   const handleFilter = () => {
     const params = new URLSearchParams();
-
-    if (selectedBrands.length > 0) {
-      params.set("brands", selectedBrands.join(",")); // ej: 1,2,3
-    }
-    if (selectedTypes.length > 0) {
-      params.set("types", selectedTypes.join(",")); // ej: 4,5
-    }
-
+    if (selectedBrands.length) params.set("brands", selectedBrands.join(","));
+    if (selectedTypes.length) params.set("types", selectedTypes.join(","));
     router.push(`/resultados?${params.toString()}`);
   };
 
-  // 🔹 Mientras valida sesión
   if (loading) {
     return (
       <main className="flex h-screen items-center justify-center">

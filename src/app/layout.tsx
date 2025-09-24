@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/components/common/NavbarWrapper";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Distribuidora Fenix",
@@ -10,18 +11,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <body className="bg-gray-800 text-gray-200">
-        {/* Navbar condicional */}
-        <NavbarWrapper />
-
-        <main className="pt-14">{children}</main>
+        <AuthProvider>
+          <NavbarWrapper />
+          <main className="pt-14">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );
