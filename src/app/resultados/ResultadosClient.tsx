@@ -147,7 +147,7 @@ export default function ResultadosClient() {
   };
 
   return (
-    <main className="p-4 relative">
+    <main className="p-4 relative mb-16">
       <div className="grid grid-cols-1 md:grid-cols-10 gap-6">
         {/* Sidebar para lg */}
         <aside className="hidden lg:block md:col-span-0 lg:col-span-3 xl:col-span-2">

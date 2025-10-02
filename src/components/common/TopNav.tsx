@@ -3,6 +3,7 @@
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface TopNavProps {
   onMenuClick: () => void;
@@ -25,14 +26,16 @@ export default function TopNav({ onMenuClick, userName, userSucursal }: TopNavPr
 
       {/* Logo */}
       <div className="flex-1 flex justify-end sm:justify-center">
-        <Image
-          src="/logos/fenixlogo.webp"
-          alt="Distribuidora Fenix"
-          width={40}
-          height={40}
-          priority
-          className="cursor-pointer"
-        />
+        <Link href="/dashboard" aria-label="Ir al inicio" className="p-1">
+          <Image
+            src="/logos/fenixlogo.webp"
+            alt="Distribuidora Fenix"
+            width={40}
+            height={40}
+            priority
+            className="cursor-pointer"
+          />
+        </Link>
       </div>
 
       {/* Usuario */}
