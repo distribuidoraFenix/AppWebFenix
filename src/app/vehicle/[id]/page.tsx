@@ -172,7 +172,7 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
               Cilindrada: <span className="font-medium">{details[0]?.cilindrada || "Sin información"} cc</span>
             </p>
              <p className="text-gray-900 font-bold text-lg">
-              Neumáticos: <span className="font-medium">{details[0]?.neumatico || "Sin información"} cc</span>
+              Neumáticos: <span className="font-medium">{details[0]?.neumatico || "Sin información"} </span>
             </p>
             <button
               onClick={handleCotizar}
