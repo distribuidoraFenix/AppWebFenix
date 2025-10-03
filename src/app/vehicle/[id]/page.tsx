@@ -32,6 +32,7 @@ type Detail = {
   pasajeros: number; 
   motor: string; 
   s_transmision: string; 
+  velocidades: string;
   cilindrada: string; 
   traccion: string; 
   torque: string; 
@@ -248,6 +249,8 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
             <div className="w-4/5 flex items-center justify-start p-4">
               <p className="text-sm sm:text-base font-semibold text-gray-800">
                 {details[0]?.s_transmision || "Sin información"}
+                <br />
+                {details[0]?.velocidades ? `${details[0].velocidades}` : ""}
               </p>
             </div>
           </div>      
