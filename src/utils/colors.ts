@@ -25,6 +25,7 @@ export const colorMap: Record<string, string> = {
   Turquesa:"bg-blue-800",
   Amarillo:"bg-yellow-400",
   Celeste:"bg-blue-500",
-  Bronce:"bg-neutral-800"
+  Bronce:"bg-neutral-800",
+  Cafe: "bg-amber-950",
   
 };
