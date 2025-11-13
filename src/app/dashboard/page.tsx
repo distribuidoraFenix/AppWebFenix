@@ -101,12 +101,12 @@ function DashboardContent() {
       </section>
 
       {/* Botón Flotante */}
-      <button
-        onClick={handleFilter}
-        className="text-sm fixed bottom-3 right-6 bg-green-700 hover:bg-green-600 text-gray-200 font-semibold px-6 py-3 rounded-lg shadow-lg"
-      >
-        FILTRAR
-      </button>
+    <button
+      onClick={handleFilter}
+      className="text-sm fixed bottom-16 sm:bottom-6 right-6 bg-green-700 hover:bg-green-600 text-gray-200 font-semibold px-6 py-3 rounded-lg shadow-lg transition-all duration-300"
+    >
+      FILTRAR
+    </button>
     </main>
   );
 }
