@@ -23,7 +23,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const menuLinks = [
     { href: "/cotizacion", label: "COTIZACIÓN", roles: ["admin", "user"] },
     { href: "/requisitos", label: "REQUISITOS", roles: ["admin", "user"] },
-    { href: "/faqs", label: "FAQ'S", roles: ["admin"] },
   ];
 
   const filteredLinks = user?.role
