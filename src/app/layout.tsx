@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <p>
       Develop by <span className="text-gray-200 font-semibold">AR-SystemsBolivia  </span> 
       for Distribuidora Fenix © {new Date().getFullYear()}
-      <span className="text-gray-200 font-semibold font-mono">  Version 1.0 </span> 
+      <span className="text-gray-200 font-semibold font-mono">  Version 1.1 </span> 
     </p>   
   </div>
 </footer>
