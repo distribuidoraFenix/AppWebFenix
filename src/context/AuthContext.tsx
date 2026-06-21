@@ -35,92 +35,112 @@ export const AuthProvider = ({
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        console.log("Iniciando verificación de sesión...");
+  // Reemplaza ÚNICAMENTE el useEffect dentro de tu AuthContext:
 
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+useEffect(() => {
+  let isMounted = true;
 
-        console.log("SESSION:", session);
+  const fetchSession = async () => {
+    try {
+      console.log("Iniciando verificación de sesión...");
+      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-        if (sessionError) {
-          console.error("Error obteniendo sesión:", sessionError);
-          return;
-        }
+      console.log("SESSION:", session);
 
-        if (!session?.user) {
-          console.log("No existe sesión activa");
+      if (sessionError) {
+        console.error("Error obteniendo sesión:", sessionError);
+        if (isMounted) setLoading(false);
+        return;
+      }
+
+      if (!session?.user) {
+        console.log("No existe sesión activa");
+        if (isMounted) {
           setUser(null);
-          return;
+          setLoading(false);
         }
+        return;
+      }
 
-        const { data: appUser, error: userError } = await supabase
-          .from("app_users")
-          .select(
-            "id, nombre, usuario, sucursal, active, role"
-          )
-          .eq("id", session.user.id)
-          .single();
+      // Si hay sesión, buscamos el usuario en tu BD
+      const { data: appUser, error: userError } = await supabase
+        .from("app_users")
+        .select("id, nombre, usuario, sucursal, active, role")
+        .eq("id", session.user.id)
+        .single();
 
-        console.log("APP USER:", appUser);
+      console.log("APP USER:", appUser);
 
-        if (userError) {
-          console.error("Error obteniendo appUser:", userError);
+      if (userError || !appUser) {
+        console.error("Error o usuario no encontrado en app_users:", userError);
+        if (isMounted) {
           setUser(null);
-          return;
+          setLoading(false);
         }
+        return;
+      }
 
-        if (!appUser) {
-          console.warn("Usuario no encontrado en app_users");
-          setUser(null);
-          return;
-        }
-
+      if (isMounted) {
         setUser(appUser);
-      } catch (error) {
-        console.error("Error inesperado:", error);
-        setUser(null);
-      } finally {
+      }
+    } catch (error) {
+      console.error("Error inesperado:", error);
+      if (isMounted) setUser(null);
+    } finally {
+      if (isMounted) {
         console.log("Loading finalizado");
         setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchSession();
+  fetchSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log("AUTH EVENT:", _event);
+  // 🚨 CORRECCIÓN CLAVE EN EL ESCUCHADOR DE EVENTOS:
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log("AUTH EVENT ENTRANTE:", event, "SESSION EXISTE?:", !!session);
 
-        if (!session?.user) {
-          setUser(null);
-          return;
-        }
+    // Si el evento es un login exitoso, no permitas que un session=null posterior rompa el flujo
+    if (event === "SIGNED_IN" && session?.user) {
+      setLoading(true); // Ponemos cargando mientras extraemos los roles
+      const { data: appUser } = await supabase
+        .from("app_users")
+        .select("id, nombre, usuario, sucursal, active, role")
+        .eq("id", session.user.id)
+        .single();
 
-        const { data: appUser } = await supabase
-          .from("app_users")
-          .select(
-            "id, nombre, usuario, sucursal, active, role"
-          )
-          .eq("id", session.user.id)
-          .single();
-
-        if (appUser) {
-          setUser(appUser);
-        }
+      if (appUser && isMounted) {
+        setUser(appUser);
+        setLoading(false);
+        // Desbancamos el SPA router y forzamos al navegador a viajar al dashboard con las cookies frescas
+        window.location.href = "/dashboard";
       }
-    );
+      return;
+    }
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    // Si explícitamente se desloguea
+    if (event === "SIGNED_OUT") {
+      if (isMounted) {
+        setUser(null);
+        setLoading(false);
+        window.location.href = "/login";
+      }
+      return;
+    }
+  });
+
+  return () => {
+    isMounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
+
 
   const login = async (
     email: string,
