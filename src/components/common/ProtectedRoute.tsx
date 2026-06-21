@@ -13,10 +13,7 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
-    console.log("ProtectedRoute", {
-    loading,
-    user,
-  });
+  
 
   useEffect(() => {
     if (!loading && !user) {
