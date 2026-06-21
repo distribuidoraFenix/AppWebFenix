@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
@@ -8,11 +8,18 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({
+  children,
+}: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // 🔹 Mientras cargamos la sesión, mostramos cargando
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [loading, user, router]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -21,12 +28,13 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // 🔹 Si no hay sesión, redirigir a login
   if (!user) {
-    router.replace("/login");
-    return null; // no renderiza nada mientras redirige
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Redirigiendo...</p>
+      </div>
+    );
   }
 
-  // 🔹 Si hay sesión, renderizamos los hijos protegidos
   return <>{children}</>;
 }
