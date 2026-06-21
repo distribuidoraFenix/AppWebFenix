@@ -27,38 +27,63 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Reemplaza ÚNICAMENTE el useEffect dentro de tu AuthContext:
+  useEffect(() => {
+    let isMounted = true;
 
-useEffect(() => {
-  let isMounted = true;
+    const fetchSession = async () => {
+      try {
+        console.log("Iniciando verificación de sesión...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-  const fetchSession = async () => {
-    try {
-      console.log("Iniciando verificación de sesión...");
-      
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+        if (sessionError || !session?.user) {
+          console.log("No existe sesión activa");
+          if (isMounted) {
+            setUser(null);
+            setLoading(false);
+          }
+          return;
+        }
 
-      console.log("SESSION:", session);
+        const { data: appUser, error: userError } = await supabase
+          .from("app_users")
+          .select("id, nombre, usuario, sucursal, active, role")
+          .eq("id", session.user.id)
+          .single();
 
-      if (sessionError) {
-        console.error("Error obteniendo sesión:", sessionError);
-        if (isMounted) setLoading(false);
-        return;
+        if (userError || !appUser) {
+          console.error("Usuario no encontrado en app_users:", userError);
+          if (isMounted) {
+            setUser(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setUser(appUser);
+        }
+      } catch (error) {
+        console.error("Error inesperado:", error);
+        if (isMounted) setUser(null);
+      } finally {
+        if (isMounted) {
+          console.log("Loading finalizado");
+          setLoading(false);
+        }
       }
+    };
+
+    fetchSession();
+
+    // El escuchador de eventos solo gestiona la memoria de la sesión
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("AUTH EVENT ENTRANTE:", event, "SESSION EXISTE?:", !!session);
 
       if (!session?.user) {
-        console.log("No existe sesión activa");
         if (isMounted) {
           setUser(null);
           setLoading(false);
@@ -66,103 +91,39 @@ useEffect(() => {
         return;
       }
 
-      // Si hay sesión, buscamos el usuario en tu BD
-      const { data: appUser, error: userError } = await supabase
-        .from("app_users")
-        .select("id, nombre, usuario, sucursal, active, role")
-        .eq("id", session.user.id)
-        .single();
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        const { data: appUser } = await supabase
+          .from("app_users")
+          .select("id, nombre, usuario, sucursal, active, role")
+          .eq("id", session.user.id)
+          .single();
 
-      console.log("APP USER:", appUser);
-
-      if (userError || !appUser) {
-        console.error("Error o usuario no encontrado en app_users:", userError);
-        if (isMounted) {
-          setUser(null);
+        if (appUser && isMounted) {
+          setUser(appUser);
           setLoading(false);
         }
-        return;
       }
+    });
 
-      if (isMounted) {
-        setUser(appUser);
-      }
-    } catch (error) {
-      console.error("Error inesperado:", error);
-      if (isMounted) setUser(null);
-    } finally {
-      if (isMounted) {
-        console.log("Loading finalizado");
-        setLoading(false);
-      }
-    }
-  };
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
-  fetchSession();
-
-  // 🚨 CORRECCIÓN CLAVE EN EL ESCUCHADOR DE EVENTOS:
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log("AUTH EVENT ENTRANTE:", event, "SESSION EXISTE?:", !!session);
-
-    // Si el evento es un login exitoso, no permitas que un session=null posterior rompa el flujo
-    if (event === "SIGNED_IN" && session?.user) {
-      setLoading(true); // Ponemos cargando mientras extraemos los roles
-      const { data: appUser } = await supabase
-        .from("app_users")
-        .select("id, nombre, usuario, sucursal, active, role")
-        .eq("id", session.user.id)
-        .single();
-
-      if (appUser && isMounted) {
-        setUser(appUser);
-        setLoading(false);
-        // Desbancamos el SPA router y forzamos al navegador a viajar al dashboard con las cookies frescas
-        window.location.href = "/dashboard";
-      }
-      return;
-    }
-
-    // Si explícitamente se desloguea
-    if (event === "SIGNED_OUT") {
-      if (isMounted) {
-        setUser(null);
-        setLoading(false);
-        window.location.href = "/login";
-      }
-      return;
-    }
-  });
-
-  return () => {
-    isMounted = false;
-    subscription.unsubscribe();
-  };
-}, []);
-
-
-  const login = async (
-    email: string,
-    password: string
-  ) => {
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  const login = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error || !data.user) {
-      throw new Error(
-        error?.message || "Error al iniciar sesión"
-      );
+      throw new Error(error?.message || "Error al iniciar sesión");
     }
 
     const { data: appUser } = await supabase
       .from("app_users")
-      .select(
-        "id, nombre, usuario, sucursal, active, role"
-      )
+      .select("id, nombre, usuario, sucursal, active, role")
       .eq("id", data.user.id)
       .single();
 
@@ -177,17 +138,11 @@ useEffect(() => {
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -195,12 +150,8 @@ useEffect(() => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
   if (!context) {
-    throw new Error(
-      "useAuth debe usarse dentro de AuthProvider"
-    );
+    throw new Error("useAuth debe usarse dentro de AuthProvider");
   }
-
   return context;
 };

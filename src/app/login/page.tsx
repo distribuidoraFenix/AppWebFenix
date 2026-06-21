@@ -1,27 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 
 export default function LoginPage() {
-  // Extraemos también 'user' para sacarte del login si ya estás autenticado
-  const { user, loading, login } = useAuth();
+  // Extraemos únicamente loading y login para evitar conflictos de estado reactivo
+  const { loading, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 🚨 CORRECTOR DE BUCLE ASÍNCRONO PARA PRODUCCIÓN
-  // Si el AuthContext en segundo plano encuentra que el usuario ya inició sesión,
-  // rompe la vista estática y fuerza el viaje al Dashboard inmediatamente.
-  useEffect(() => {
-    if (!loading && user) {
-      console.log("LOGIN DETECTÓ USER EN PRODUCCIÓN → Forzando Dashboard");
-      window.location.href = "/dashboard";
-    }
-  }, [user, loading]);
+  // 🟢 SE ELIMINÓ EL USEEFFECT DETECTOR DE USER (EVITA EL PARPADEO Y REBOTE)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,15 +23,15 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      console.log("INICIANDO LOGIN");
+      console.log("INICIANDO LOGIN LINEAL");
 
+      // 1. Esperamos a que Supabase procese las credenciales y actualice cookies
       await login(email, password);
 
-      console.log("LOGIN OK → Forzando redirección limpia");
+      console.log("LOGIN OK → Ejecutando redirección única y directa");
       
-      // SOLUCIÓN CRÍTICA: window.location.href rompe la caché estática de Vercel
-      // e inyecta las cookies de Supabase de manera instantánea en el servidor.
-      window.location.href = "/dashboard";
+      // 2. Redirección lineal: reemplaza la ruta actual sin dejar historial para evitar bucles
+      window.location.replace("/dashboard");
 
     } catch (err) {
       console.error("LOGIN ERROR:", err);
@@ -48,12 +40,13 @@ export default function LoginPage() {
       } else {
         setError("Ocurrió un error inesperado");
       }
-    } finally {
+      // Solo liberamos el submit si hubo un error para permitir reintentar
       setIsSubmitting(false);
     }
   };
 
-  if (loading) {
+  // Evitamos mostrar la pantalla de carga si el usuario está enviando el formulario activamente
+  if (loading && !isSubmitting) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-900">
         <p className="text-gray-400 font-medium">Verificando sesión...</p>
@@ -82,6 +75,7 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 mb-3 border rounded-lg text-gray-900"
           autoComplete="email"
+          disabled={isSubmitting}
         />
 
         <input
@@ -91,11 +85,12 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 mb-4 border rounded-lg text-gray-900"
           autoComplete="current-password"
+          disabled={isSubmitting}
         />
 
         <button
           type="submit"
-          disabled={loading || isSubmitting}
+          disabled={isSubmitting}
           className="w-full bg-violet-600 text-white py-2 rounded-lg hover:bg-violet-950 disabled:opacity-50"
         >
           {isSubmitting ? "Ingresando..." : "Ingresar"}
