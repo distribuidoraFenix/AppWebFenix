@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const { loading, login } = useAuth();
+  // Extraemos también 'user' para sacarte del login si ya estás autenticado
+  const { user, loading, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ❌ SE ELIMINÓ EL USEEFFECT QUE USABA ROUTER.REPLACE
+  // 🚨 CORRECTOR DE BUCLE ASÍNCRONO PARA PRODUCCIÓN
+  // Si el AuthContext en segundo plano encuentra que el usuario ya inició sesión,
+  // rompe la vista estática y fuerza el viaje al Dashboard inmediatamente.
+  useEffect(() => {
+    if (!loading && user) {
+      console.log("LOGIN DETECTÓ USER EN PRODUCCIÓN → Forzando Dashboard");
+      window.location.href = "/dashboard";
+    }
+  }, [user, loading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +37,7 @@ export default function LoginPage() {
 
       console.log("LOGIN OK → Forzando redirección limpia");
       
-      //  SOLUCIÓN CRÍTICA: window.location.href rompe la caché estática de Vercel
+      // SOLUCIÓN CRÍTICA: window.location.href rompe la caché estática de Vercel
       // e inyecta las cookies de Supabase de manera instantánea en el servidor.
       window.location.href = "/dashboard";
 
@@ -46,8 +55,8 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500">Verificando sesión...</p>
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <p className="text-gray-400 font-medium">Verificando sesión...</p>
       </div>
     );
   }
