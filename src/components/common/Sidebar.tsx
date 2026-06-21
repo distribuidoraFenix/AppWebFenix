@@ -17,7 +17,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   const handleLogout = async () => {
     await logout();
-    router.push("/login");
+    router.replace("/login");
+    router.refresh();
   };
 
   const menuLinks = [

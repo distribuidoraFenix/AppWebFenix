@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   // Extraemos únicamente loading y login para evitar conflictos de estado reactivo
   const { loading, login } = useAuth();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +33,8 @@ export default function LoginPage() {
       console.log("LOGIN OK → Ejecutando redirección única y directa");
       
       // 2. Redirección lineal: reemplaza la ruta actual sin dejar historial para evitar bucles
-      window.location.replace("/dashboard");
+      router.replace("/dashboard");
+      router.refresh();
 
     } catch (err) {
       console.error("LOGIN ERROR:", err);
