@@ -1,32 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const { user, loading, login } = useAuth();
-  const router = useRouter();
+  const { loading, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 🔥 Redirección controlada (ÚNICA fuente de navegación)
-  useEffect(() => {
-    if (!loading && user) {
-      console.log("USER DETECTADO → redirigiendo dashboard");
-      router.replace("/dashboard");
-    }
-  }, [user, loading, router]);
+  // ❌ SE ELIMINÓ EL USEEFFECT QUE USABA ROUTER.REPLACE
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (isSubmitting) return; // 🔒 evita doble submit
+    if (isSubmitting) return; 
     setIsSubmitting(true);
 
     try {
@@ -34,13 +26,14 @@ export default function LoginPage() {
 
       await login(email, password);
 
-      console.log("LOGIN OK");
+      console.log("LOGIN OK → Forzando redirección limpia");
+      
+      //  SOLUCIÓN CRÍTICA: window.location.href rompe la caché estática de Vercel
+      // e inyecta las cookies de Supabase de manera instantánea en el servidor.
+      window.location.href = "/dashboard";
 
-      // ❗ NO router.push aquí
-      // la redirección la maneja el useEffect
     } catch (err) {
       console.error("LOGIN ERROR:", err);
-
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -51,7 +44,6 @@ export default function LoginPage() {
     }
   };
 
-  // 🔹 Solo bloqueamos mientras se verifica sesión inicial
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -66,28 +58,14 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm flex flex-col items-center"
       >
-        {/* Logo */}
         <div className="mb-4 flex justify-center">
-          <Image
-            src="/logos/fenixlogo.webp"
-            alt="Fenix Logo"
-            width={120}
-            height={120}
-            priority
-          />
+          <Image src="/logos/fenixlogo.webp" alt="Fenix Logo" width={120} height={120} priority />
         </div>
 
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">
-          Iniciar Sesión
-        </h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Iniciar Sesión</h1>
 
-        {error && (
-          <p className="text-red-600 mb-2 text-sm text-center">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-red-600 mb-2 text-sm text-center">{error}</p>}
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Correo"
@@ -97,7 +75,6 @@ export default function LoginPage() {
           autoComplete="email"
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Contraseña"
@@ -107,7 +84,6 @@ export default function LoginPage() {
           autoComplete="current-password"
         />
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading || isSubmitting}
