@@ -1,19 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const { loading, login } = useAuth();
+  const { user, loading, login } = useAuth();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 🔥 Redirección controlada (ÚNICA fuente de navegación)
+  useEffect(() => {
+    if (!loading && user) {
+      console.log("USER DETECTADO → redirigiendo dashboard");
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (isSubmitting) return; // 🔒 evita doble submit
+    setIsSubmitting(true);
 
     try {
       console.log("INICIANDO LOGIN");
@@ -22,9 +36,8 @@ export default function LoginPage() {
 
       console.log("LOGIN OK");
 
-      // ❗ IMPORTANTE:
-      // NO hacemos router.push aquí.
-      // La redirección la maneja el AuthContext + ProtectedRoute
+      // ❗ NO router.push aquí
+      // la redirección la maneja el useEffect
     } catch (err) {
       console.error("LOGIN ERROR:", err);
 
@@ -33,6 +46,8 @@ export default function LoginPage() {
       } else {
         setError("Ocurrió un error inesperado");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -95,10 +110,10 @@ export default function LoginPage() {
         {/* Submit */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isSubmitting}
           className="w-full bg-violet-600 text-white py-2 rounded-lg hover:bg-violet-950 disabled:opacity-50"
         >
-          {loading ? "Cargando..." : "Ingresar"}
+          {isSubmitting ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
     </div>
