@@ -13,6 +13,10 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
+    console.log("ProtectedRoute", {
+    loading,
+    user,
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -21,16 +25,20 @@ export default function ProtectedRoute({
   }, [loading, user, router]);
 
   if (loading) {
-  console.log("ProtectedRoute", { loading, user });
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Verificando sesión...</p>
+      </div>
+    );
+  }
 
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <p className="text-gray-500">
-        Verificando sesión...
-      </p>
-    </div>
-  );
-}
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Redirigiendo...</p>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }
