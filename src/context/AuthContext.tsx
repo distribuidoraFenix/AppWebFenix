@@ -80,6 +80,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchSession();
 
     // El escuchador de eventos solo gestiona la memoria de la sesión
+  
+        // El escuchador de eventos SOLO actualiza la memoria de forma segura, sin bloquear con loadings eternos
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("AUTH EVENT ENTRANTE:", event, "SESSION EXISTE?:", !!session);
 
@@ -91,16 +93,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      // Si es un inicio de sesión o refresco de token, actualizamos los datos del usuario en segundo plano
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        const { data: appUser } = await supabase
-          .from("app_users")
-          .select("id, nombre, usuario, sucursal, active, role")
-          .eq("id", session.user.id)
-          .single();
+        try {
+          const { data: appUser } = await supabase
+            .from("app_users")
+            .select("id, nombre, usuario, sucursal, active, role")
+            .eq("id", session.user.id)
+            .single();
 
-        if (appUser && isMounted) {
-          setUser(appUser);
-          setLoading(false);
+          if (appUser && isMounted) {
+            setUser(appUser);
+          }
+        } catch (err) {
+          console.error("Error en segundo plano actualizando app_user:", err);
+        } finally {
+          // Garantizamos que el loading baje a false SIEMPRE en producción
+          if (isMounted) {
+            setLoading(false);
+          }
         }
       }
     });
