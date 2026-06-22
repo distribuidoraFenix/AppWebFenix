@@ -11,7 +11,10 @@ type Trabajo =
   | "productor"
   | "negocio"
   | "independiente"
-  | "consultor";
+  | "consultor"
+  | "minerocoop"
+  | "mineroa"
+  | "mineroinf";
 type Deudas = "si" | "no";
 type Garantia = "patrimonio" | "garante" | "vehicular";
 type Vivienda = "alquiler" | "anticretico" | "propio_sd" | "familiar" | "propietario";
@@ -25,8 +28,10 @@ const RESPALDOS_OPCIONES: { value: Trabajo; label: string }[] = [
   { value: "negocio", label: "Negocio Propio" },
   { value: "independiente", label: "Trabajador Independiente" },
   { value: "consultor", label: "Consultor" },
+  { value: "minerocoop", label: "Minero Coperativista" },
+  { value: "mineroa", label: "Mineros Asalariado"},
+  { value: "mineroinf", label: "Minero Informal"}
 ];
-
 
 const DOCS_TRABAJO: Record<Trabajo, string[]> = {
   asalariado: [
@@ -81,6 +86,22 @@ const DOCS_TRABAJO: Record<Trabajo, string[]> = {
     "Croquis de la fuente laboral",
     "Extracto de aportes GESTORA PÚBLICA",
   ],
+  minerocoop: [
+    "Fotocopia de carnet de cooperativista",
+    "Fotocopia de recibos de venta de mineral",
+    "Fotocopia de certificado de la Cooperativa",
+    "Fotocopia de recibo de pago de la cooperativa",
+    "Fotografía en su fuente laboral",
+  ],
+  mineroa: [
+    "Fotocopia de las 3 últimas boletas de pago",
+    "Fotocopia de contrato de trabajo", 
+    "Fotografía en su fuente laboral",
+  ],
+  mineroinf: [
+    "Fotografias de su fuente laboral",
+    "cualquier documento de respaldo (recibos de venta, contratos, etc)",
+  ],
 };
 
 const DOCS_DEUDAS = [
@@ -129,7 +150,7 @@ const DOCS_GARANTIA: Record<Garantia, string[]> = {
     "Fotocopia del último impuesto pagado",
   ],
   vehicular: [
-    "En este caso los documentos originales del vehiculo se quedarían en custodia del banco"
+    "En este caso los documentos originales del vehiculo se quedarían en custodia del banco o para el credito directo se quedarían en custodia de la Distribuidora"
   ],
 };
 
