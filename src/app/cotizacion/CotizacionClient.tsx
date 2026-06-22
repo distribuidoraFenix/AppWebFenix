@@ -36,7 +36,7 @@ export default function CotizacionPage() {
     const tasaMensual = Number(interes) / 100 / 12;
     const plazoMeses = plazo;
     const cuota =
-      (montoFinanciar * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses)) - 200;
+      (montoFinanciar * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazoMeses));
     setCuotaMensual(Math.round(cuota)); // sin decimales
   };
 
