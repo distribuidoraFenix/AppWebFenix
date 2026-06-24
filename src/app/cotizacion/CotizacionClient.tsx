@@ -88,7 +88,7 @@ export default function CotizacionPage() {
           Cotización
         </h1>
 
-        <div className="flex flex-col gap-2 ms:gap-3 md:gap-4">
+        <div className="flex flex-col gap-2 ms:gap-6 md:gap-2">
           {/* Costo Total */}
           <div className="flex flex-col-2 sm:flex-row gap-2 items-center w-full">
             <label className="w-full sm:w-1/2 italic text-gray-800 font-bold">Costo total</label>
