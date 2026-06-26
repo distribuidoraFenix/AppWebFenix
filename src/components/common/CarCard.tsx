@@ -25,7 +25,8 @@ export default function CarCard({ car }: CarCardProps) {
   };
 
   const handleCotizar = () => {
-    router.push(`/cotizacion?id=${car.id}&precio=${car.precio}`);
+    router.push(`/cotizacion?id=${car.id}&precio=${car.precio}&nombre=${encodeURIComponent(car.nombre)}`);
+   
   };
 
   return (

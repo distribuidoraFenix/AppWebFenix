@@ -6,7 +6,7 @@ import { colorMap } from "@/utils/colors";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import { use } from "react"; // 👈 importante
+import { use } from "react"; 
 
 type DataCar = {
   id: number;
@@ -53,7 +53,7 @@ type Brand = {
 };
 
 export default function VehiclePage({ params }: { params: Promise<{ id: string }> }) {
-  // 👇 aquí unwrap del Promise
+  // 
   const { id } = use(params);
 
   const [car, setCar] = useState<DataCar | null>(null);
@@ -115,10 +115,12 @@ export default function VehiclePage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  // 👇 función para redirigir a cotización con precio y nombre
+  // función para redirigir a cotización con precio y nombre
   const handleCotizar = () => {
-    router.push(`/cotizacion?precio=${car.precio}&nombre=${encodeURIComponent(car.nombre)}`);
+    router.push(`/cotizacion?precio=${car.precio}&nombre=${encodeURIComponent(car.nombre || 'Sin Nombre')}`);
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gray-800 flex flex-col items-center p-4 relative">
