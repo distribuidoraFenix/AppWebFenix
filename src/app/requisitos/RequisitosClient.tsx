@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-// Tipos
+// Establecemos las opciones de seleccion para los requisitos
 type EstadoCivil = "soltero" | "casado";
 type Trabajo =
   | "asalariado"
@@ -150,7 +150,8 @@ const DOCS_GARANTIA: Record<Garantia, string[]> = {
     "Fotocopia del último impuesto pagado",
   ],
   vehicular: [
-    "En este caso los documentos originales del vehiculo se quedarían en custodia del banco o para el credito directo se quedarían en custodia de la Distribuidora"
+    "Los documentos quedan como garantia del banco",
+    "Los documentos quedan como garantia de la empresa"
   ],
 };
 
@@ -272,413 +273,427 @@ export default function RequisitosPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen px-8 py-4 sm:px-8 sm:py-4 max-w-lg md:w-3xl mx-auto">
-      <h1 className="bg-red-900 text-white text-2xl sm:text-3xl font-bold px-2 py-2 sm:px-4 sm:py-3 rounded mb-4 text-center">
-        REQUISITOS
-      </h1>
+    <div className="bg-white min-h-screen px-8 py-4 mx-4 text-sm [&_h2]:text-lg [&_h3]:text-base
+                   [&_input]:accent-green-600 [&_input]:cursor-pointer
+                   flex flex-col md:mx-32 lg:flex-row lg:mx-12 lg:justify-center lg:gap-20 xl:mx-24">
 
-      {/* DOCUMENTOS PERSONALES */}
-      <h2 className="text-red-600 text-lg sm:text-2xl font-semibold mb-2">
-        DOCUMENTOS PERSONALES
-      </h2>
-      <fieldset className="flex gap-2 sm:gap-4 mb-3 flex-wrap">
-        <label className="flex items-center gap-1 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="estadoCivil"
-            value="soltero"
-            checked={estadoCivil === "soltero"}
-            onChange={() => setEstadoCivil("soltero")}
-          />
-          Soltero
-        </label>
-        <label className="flex items-center gap-1 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="estadoCivil"
-            value="casado"
-            checked={estadoCivil === "casado"}
-            onChange={() => setEstadoCivil("casado")}
-          />
-          Casado
-        </label>
-      </fieldset>
-
-      {estadoCivil === "soltero" && (
-        <ul className="list-disc list-inside text-gray-700 mb-3">
-          <li>Fotocopia de carnet</li>
-          <li>Fotocopia de factura de luz y agua</li>
-          <li>Croquis de domicilio</li>
-          <li>Fotografias del domicilio</li>
-        </ul>
-      )}
-      {estadoCivil === "casado" && (
-        <ul className="list-disc list-inside text-gray-700 mb-3">
-          <li>Fotocopia de carnet</li>
-          <li>Fotocopia de carnet de su pareja</li>
-          <li>Fotocopia de factura de luz y agua</li>
-          <li>Croquis de domicilio</li>
-          <li>Fotografias del domicilio</li>
-        </ul>
-      )}
-
-      {/* RESPALDOS DE TRABAJO */}
-      <h2 className="text-red-600 text-base sm:text-xl font-semibold mb-2">
-        RESPALDOS DE TRABAJO
-      </h2>
-      <fieldset className="flex flex-wrap gap-2 sm:gap-4 mb-3">
-        {RESPALDOS_OPCIONES.map((opt) => (
-          <label key={opt.value} className="flex items-center gap-1 text-blue-950 font-bold">
+      {/* PRIMER CUERPO */} 
+      <section className="">
+        <h2 className="bg-red-900 text-white font-bold px-2 py-2  rounded mb-4 text-center ">
+            REQUISITOS 
+        </h2>
+          {/* DOCUMENTOS PERSONALES */}
+        <h3 className="text-red-600 font-semibold mb-2">
+          DOCUMENTOS PERSONALES
+        </h3>
+        <fieldset className="flex w-full gap-16 mb-3 flex-wrap">
+          <label className="flex items-center gap-1 text-blue-950 font-bold">
             <input
               type="radio"
-              name="respaldosTrabajo"
-              value={opt.value}
-              checked={respaldosTrabajo === opt.value}
-              onChange={() => handleChangeFiltro(opt.value)}
+              name="estadoCivil"
+              value="soltero"
+              checked={estadoCivil === "soltero"}
+              onChange={() => setEstadoCivil("soltero")}
+            
             />
-            {opt.label}
+            Soltero
           </label>
-        ))}
-      </fieldset>
+          <label className="flex items-center gap-1 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="estadoCivil"
+              value="casado"
+              checked={estadoCivil === "casado"}
+              onChange={() => setEstadoCivil("casado")}
+              
+            />
+            Casado
+          </label>
+        </fieldset>
 
-      {/* Checklists del trabajo seleccionado */}
-      {docsTrabajoActivos.length > 0 && (
-        <ul className="list-disc list-inside text-gray-700 mb-3">
-          {docsTrabajoActivos.map((item) => (
-            <li key={item} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={seleccionRespaldos.includes(item)}
-                onChange={() => toggleSeleccionRespaldos(item)}
-              />
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
+        {estadoCivil === "soltero" && (
+          <ul className="list-disc list-inside text-gray-700 mb-3">
+            <li>Fotocopia de carnet</li>
+            <li>Fotocopia de factura de luz y agua</li>
+            <li>Croquis de domicilio</li>
+            <li>Fotografias del domicilio</li>
+          </ul>
+        )}
+        {estadoCivil === "casado" && (
+          <ul className="list-disc list-inside text-gray-700 mb-3">
+            <li>Fotocopia de carnet</li>
+            <li>Fotocopia de carnet de su pareja</li>
+            <li>Fotocopia de factura de luz y agua</li>
+            <li>Croquis de domicilio</li>
+            <li>Fotografias del domicilio</li>
+          </ul>
+        )}
 
-      {/* DEUDAS */}
-      <h2 className="text-red-600 text-base sm:text-xl font-semibold mb-2">
-        EN CASO DE DEUDAS BANCARIAS
-      </h2>
-      <fieldset className="flex gap-2 sm:gap-4 mb-3">
-        <label className="flex items-center gap-1 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="deudas"
-            value="si"
-            checked={deudas === "si"}
-            onChange={() => setDeudas("si")}
-          />
-          SI
-        </label>
-        <label className="flex items-center gap-1 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="deudas"
-            value="no"
-            checked={deudas === "no"}
-            onChange={() => setDeudas("no")}
-          />
-          NO
-        </label>
-      </fieldset>
-      {deudas === "si" && (
-        <ul className="list-disc list-inside text-gray-700 mb-3">
-          {DOCS_DEUDAS.map((d) => (
-            <li key={d}>{d}</li>
-          ))}
-        </ul>
-      )}
+        {/* RESPALDOS DE TRABAJO */}
+        <h3 className="text-red-600 font-semibold mb-2">
+          RESPALDOS DE TRABAJO
+        </h3>
+      <fieldset className="grid grid-cols-2 gap-2 mb-3"> 
+          {RESPALDOS_OPCIONES.map((opt) => ( 
+            <label key={opt.value} className="flex items-center gap-1 text-blue-950 font-bold"> 
+              <input 
+                type="radio" 
+                name="respaldosTrabajo" 
+                value={opt.value} 
+                checked={respaldosTrabajo === opt.value} 
+                onChange={() => handleChangeFiltro(opt.value)} 
+              /> 
+              {opt.label} 
+            </label> 
+          ))} 
+        </fieldset>
 
-      {/* VIVIENDA */} 
-       <h2 className="text-red-600 text-base sm:text-xl font-semibold mb-2">
-        VIVIENDA
-      </h2>        
-      <fieldset className="mb-3 flex flex-col gap-2">
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="vivienda"
-            value="propietario"
-            checked={vivienda === "propietario"}
-            onChange={() => {
-              setVivienda("propietario");
-              setSeleccionVivienda([]);
-            }}
-          />
-          Propietario
-        </label>
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="vivienda"
-            value="alquiler"
-            checked={vivienda === "alquiler"}
-            onChange={() => {
-              setVivienda("alquiler");
-              setSeleccionVivienda([]);
-            }}
-          />
-        Alquiler
-        </label>
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="vivienda"
-            value="anticretico"            
-            checked={vivienda === "anticretico"}
-            onChange={() => {
-              setVivienda("anticretico");
-              setSeleccionVivienda([]);
-            }}
-          />
-          Anticretico
-        </label>
-         <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="vivienda"
-            value="familiar"            
-            checked={vivienda === "familiar"}
-            onChange={() => {
-              setVivienda("familiar");
-              setSeleccionVivienda([]);
-            }}
-          />
-          Familiar
-        </label>
-         <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="vivienda"
-            value="propio_sd"            
-            checked={vivienda === "propio_sd"}
-            onChange={() => {
-              setVivienda("propio_sd");
-              setSeleccionVivienda([]);
-            }}
-          />
-          Propio S/D
-        </label>
-      </fieldset>
-
-      {/* Checklists de garantía */}
-      {vivienda === "propietario" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            RESPALDO PATRIMONIAL CASA PROPIA
-          </h3>
-          {docsVivienda.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
+        {/* Checklists del trabajo seleccionado */}
+        {docsTrabajoActivos.length > 0 && (
+          <ul className="list-disc list-inside text-gray-700 mb-3">
+            {docsTrabajoActivos.map((item) => (
+              <li key={item} className="flex items-center gap-3">
                 <input
                   type="checkbox"
-                  checked={seleccionVivienda.includes(item)}
-                  onChange={() => toggleSeleccionVivienda(item)}
+                  checked={seleccionRespaldos.includes(item)}
+                  onChange={() => toggleSeleccionRespaldos(item)}
+                
                 />
                 {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
-      {vivienda === "alquiler" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            ALQUILER
-          </h3>
-          {docsVivienda.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionVivienda.includes(item)}
-                  onChange={() => toggleSeleccionVivienda(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
-      {vivienda === "anticretico" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            ANTICRECTICO
-          </h3>
-          {docsVivienda.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionVivienda.includes(item)}
-                  onChange={() => toggleSeleccionVivienda(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
-      {vivienda === "familiar" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            FAMILIAR
-          </h3>
-          {docsVivienda.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionVivienda.includes(item)}
-                  onChange={() => toggleSeleccionVivienda(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
-      {vivienda === "propio_sd" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            PROPIO S/D
-          </h3>
-          {docsVivienda.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionVivienda.includes(item)}
-                  onChange={() => toggleSeleccionVivienda(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
 
-      {/* GARANTÍA */}
-      <h2 className="bg-blue-900 text-white text-2xl sm:text-3xl font-bold px-2 py-2 sm:px-4 sm:py-3 rounded mb-4 text-center">
-        GARANTÍA
-      </h2>
-      <p className="text-gray-700 mb-2 font-bold italic text-sm sm:text-base">
-        Se puede trabajar con una de las 3 opciones:
-      </p>
-      <fieldset className="mb-3 flex flex-col gap-2">
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="garantia"
-            value="patrimonio"
-            checked={tipoGarantia === "patrimonio"}
-            onChange={() => {
-              setTipoGarantia("patrimonio");
-              setSeleccionGarantia([]);
-            }}
-          />
-          Patrimonio (casa, departamento, terreno)
-        </label>
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="garantia"
-            value="garante"
-            checked={tipoGarantia === "garante"}
-            onChange={() => {
-              setTipoGarantia("garante");
-              setSeleccionGarantia([]);
-            }}
-          />
-          Garante Personal (casa, departamento, terreno)
-        </label>
-        <label className="flex items-center gap-2 text-blue-950 font-bold">
-          <input
-            type="radio"
-            name="garantia"
-            value="vehicular"
-            checked={tipoGarantia === "vehicular"}
-            onChange={() => {
-              setTipoGarantia("vehicular");
-              setSeleccionGarantia([]);
-            }}
-          />
-          Vehicular
-        </label>
-      </fieldset>
+      
+      </section>   
+     
+      {/* SEGUNDO CUERPO */} 
+      <section>
+              {/* DEUDAS */}
+        <h3 className="text-red-600 font-semibold mb-2">
+          EN CASO DE DEUDAS BANCARIAS
+        </h3>
+        <fieldset className="flex gap-16 mb-3 flex-wrap">
+          <label className="flex items-center gap-1 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="deudas"
+              value="si"
+              checked={deudas === "si"}
+              onChange={() => setDeudas("si")}
+            />
+            SI
+          </label>
+          <label className="flex items-center gap-1 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="deudas"
+              value="no"
+              checked={deudas === "no"}
+              onChange={() => setDeudas("no")}
+            />
+            NO
+          </label>
+        </fieldset>
+        {deudas === "si" && (
+          <ul className="list-disc list-inside text-gray-700 mb-3">
+            {DOCS_DEUDAS.map((d) => (
+              <li key={d}>{d}</li>
+            ))}
+          </ul>
+        )}
 
-      {/* Checklists de garantía */}
-      {tipoGarantia === "patrimonio" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            PATRIMONIO
-          </h3>
-          {docsGarantiaActivos.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionGarantia.includes(item)}
-                  onChange={() => toggleSeleccionGarantia(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
+        {/* VIVIENDA */} 
+        <h3 className="text-red-600 font-semibold mb-2">
+          VIVIENDA
+        </h3>        
+        <fieldset className="grid grid-cols-2 gap-2  mb-3">
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="vivienda"
+              value="propietario"
+              checked={vivienda === "propietario"}
+              onChange={() => {
+                setVivienda("propietario");
+                setSeleccionVivienda([]);
+              }}
+            />
+            Propietario
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="vivienda"
+              value="alquiler"
+              checked={vivienda === "alquiler"}
+              onChange={() => {
+                setVivienda("alquiler");
+                setSeleccionVivienda([]);
+              }}
+            />
+          Alquiler
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="vivienda"
+              value="anticretico"            
+              checked={vivienda === "anticretico"}
+              onChange={() => {
+                setVivienda("anticretico");
+                setSeleccionVivienda([]);
+              }}
+            />
+            Anticretico
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="vivienda"
+              value="familiar"            
+              checked={vivienda === "familiar"}
+              onChange={() => {
+                setVivienda("familiar");
+                setSeleccionVivienda([]);
+              }}
+            />
+            Familiar
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="vivienda"
+              value="propio_sd"            
+              checked={vivienda === "propio_sd"}
+              onChange={() => {
+                setVivienda("propio_sd");
+                setSeleccionVivienda([]);
+              }}
+            />
+            Propio S/D
+          </label>
+        </fieldset>
 
-      {tipoGarantia === "garante" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            GARANTE
-          </h3>
-          {docsGarantiaActivos.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionGarantia.includes(item)}
-                  onChange={() => toggleSeleccionGarantia(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
+        {/* Checklists de garantía */}
+        {vivienda === "propietario" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              RESPALDO PATRIMONIAL CASA PROPIA
+            </h4>
+            {docsVivienda.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionVivienda.includes(item)}
+                    onChange={() => toggleSeleccionVivienda(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        {vivienda === "alquiler" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              ALQUILER
+            </h4>
+            {docsVivienda.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionVivienda.includes(item)}
+                    onChange={() => toggleSeleccionVivienda(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        {vivienda === "anticretico" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              ANTICRECTICO
+            </h4>
+            {docsVivienda.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionVivienda.includes(item)}
+                    onChange={() => toggleSeleccionVivienda(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        {vivienda === "familiar" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              FAMILIAR
+            </h4>
+            {docsVivienda.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionVivienda.includes(item)}
+                    onChange={() => toggleSeleccionVivienda(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        {vivienda === "propio_sd" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              PROPIO S/D
+            </h4>
+            {docsVivienda.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionVivienda.includes(item)}
+                    onChange={() => toggleSeleccionVivienda(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
 
-      {tipoGarantia === "vehicular" && (
-        <ul className="list-none list-inside text-gray-700 mb-3">
-          <h3 className="text-red-600 text-base sm:text-xl font-semibold mb-1">
-            VEHICULAR
-          </h3>
-          {docsGarantiaActivos.map((item) => (
-            <li key={item}>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={seleccionGarantia.includes(item)}
-                  onChange={() => toggleSeleccionGarantia(item)}
-                />
-                {item}
-              </label>
-            </li>
-          ))}         
-        </ul>
-      )}
+        {/* GARANTÍA */}
+        <h2 className="bg-blue-900 text-white font-bold px-2 py-2  rounded mb-4 text-center ">
+          GARANTÍA
+        </h2>
+        <p className="text-orange-500 mb-2 font-bold italic text-sm sm:text-base">
+          Se puede trabajar con una de las 3 opciones:
+        </p>
+        <fieldset className="mb-3 flex flex-col gap-2">
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="garantia"
+              value="patrimonio"
+              checked={tipoGarantia === "patrimonio"}
+              onChange={() => {
+                setTipoGarantia("patrimonio");
+                setSeleccionGarantia([]);
+              }}
+            />
+            Patrimonio (casa, departamento, terreno)
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="garantia"
+              value="garante"
+              checked={tipoGarantia === "garante"}
+              onChange={() => {
+                setTipoGarantia("garante");
+                setSeleccionGarantia([]);
+              }}
+            />
+            Garante Personal (casa, departamento, terreno)
+          </label>
+          <label className="flex items-center gap-2 text-blue-950 font-bold">
+            <input
+              type="radio"
+              name="garantia"
+              value="vehicular"
+              checked={tipoGarantia === "vehicular"}
+              onChange={() => {
+                setTipoGarantia("vehicular");
+                setSeleccionGarantia([]);
+              }}
+            />
+            Vehicular
+          </label>
+        </fieldset>
 
-      {/* Botón ENVIAR */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => setShowModal(true)}
-          className="w-full sm:w-auto px-4 py-2 bg-green-700 text-white rounded hover:bg-green-500 text-base font-semibold"
-        >
-          ENVIAR
-        </button>
-      </div>
+        {/* Checklists de garantía */}
+        {tipoGarantia === "patrimonio" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600 font-semibold mb-1">
+              PATRIMONIO
+            </h4>
+            {docsGarantiaActivos.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionGarantia.includes(item)}
+                    onChange={() => toggleSeleccionGarantia(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {tipoGarantia === "garante" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600  font-semibold mb-1">
+              GARANTE
+            </h4>
+            {docsGarantiaActivos.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionGarantia.includes(item)}
+                    onChange={() => toggleSeleccionGarantia(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {tipoGarantia === "vehicular" && (
+          <ul className="list-none list-inside text-gray-700 mb-3">
+            <h4 className="text-red-600  font-semibold mb-1">
+              VEHICULAR
+            </h4>
+            {docsGarantiaActivos.map((item) => (
+              <li key={item}>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={seleccionGarantia.includes(item)}
+                    onChange={() => toggleSeleccionGarantia(item)}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}         
+          </ul>
+        )}
+
+        {/* Botón ENVIAR */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="w-full sm:w-auto px-4 py-2 bg-green-700 text-white rounded hover:bg-green-500 text-base font-semibold"
+          >
+            ENVIAR
+          </button>
+        </div>
+
+      </section>
 
       {/* Modal con 3 botones */}
       {showModal && (
